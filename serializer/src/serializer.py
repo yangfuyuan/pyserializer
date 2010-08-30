@@ -615,7 +615,7 @@ class Serializer():
             return self.execute_array(cmd)
         
     def voltage(self, cached=False):
-        if cached:
+        if cached and self.analog_sensor_cache[5] != None:
             return self.analog_sensor_cache[5] * 15. / 1024.
         else:
             return self.sensor(5) * 15. / 1024.
@@ -669,7 +669,7 @@ class GP2D12():
         self.pin = pin
 
     def value(self, cached=False):
-        if cached:
+        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
             value = self.serializer.analog_sensor_cache[self.pin]
         else:
             value = self.serializer.sensor(self.pin)
@@ -700,7 +700,7 @@ class PhidgetsTemperature():
         self.units = units
     
     def value(self, cached=False):
-        if cached:
+        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
             value = self.serializer.analog_sensor_cache[self.pin]
         else:
             value = self.serializer.sensor(self.pin)
@@ -722,7 +722,7 @@ class PhidgetsVoltage():
         self.pin = pin
     
     def value(self, cached=False):
-        if cached:
+        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
             value = self.serializer.analog_sensor_cache[self.pin]
         else:
             value = self.serializer.sensor(self.pin)
@@ -744,7 +744,7 @@ class PhidgetsCurrent():
         self.ac_dc = ac_dc
         
     def value(self, cached=False):
-        if cached:
+        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
             value = self.serializer.analog_sensor_cache[self.pin]
         else:
             value = self.serializer.sensor(self.pin)
@@ -771,14 +771,14 @@ class Ping():
         self.pin = pin
     
     def value(self, cached=False):   
-        if cached:
+        if cached and self.serializer.digital_sensor_cache[self.pin] != None:
             value = self.serializer.digital_sensor_cache[self.pin]
         else:
             value = self.serializer.pping(self.pin)
         return value
     
 
-
+''' Test Functions '''
 if __name__ == "__main__":
     import time, os
     
@@ -789,8 +789,10 @@ if __name__ == "__main__":
         # sudo rfcomm bind /dev/rfcomm0
     else:
         portName = "COM12"
+        
+    baudRate = 19200
   
-    mySer = Serializer(port=portName, baudrate="19200", timeout=1)
+    mySer = Serializer(port=portName, baudrate=baudRate, timeout=1)
     myPing = Ping(mySer, 4)  
     myIR = GP2D12(mySer, 4)
     myTemp = PhidgetsTemperature(mySer, 0, "F")
@@ -861,15 +863,13 @@ if __name__ == "__main__":
     ''' * * * * * '''
     
     for x in range(50):
+        #analog = mySer.get_all_analog()
         start = time.clock()
         sonar = myPing.value()
-        #analog = mySer.get_all_analog()
         ir = myIR.value(cached=False)
-        print "Time:", time.clock() - start
-        print "Sonar:", sonar, "IR:", round(ir, 1)
-        time.sleep(0.05) # 20Hz
-
-
+        deltaT = time.clock() - start
+        time.sleep(0.05 - deltaT) # 20Hz
+        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
     mySer.stop()
     mySer.close()
     
