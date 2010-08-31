@@ -1,6 +1,6 @@
 """
-  A Python library for the Robotics Connection SerializerTM micro controller
-  The Pi Robot Project: http://www.pirobot.org
+  A Python library for the Robotics Connection SerializerTM micro controller.
+  Created for The Pi Robot Project: http://www.pirobot.org
   Copyright (c) 2010 Patrick Goebel.  All rights reserved.
 
   This program is free software; you can redistribute it and/or modify
@@ -866,13 +866,15 @@ if __name__ == "__main__":
 #        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
     ''' * * * * * '''
     
-    for x in range(50):
-        start = time.clock()
+    while True:
+        start = time.time()
         sonar = myPing.value()
         ir = myIR.value(cached=False)
-        deltaT = time.clock() - start
-        time.sleep(0.05 - deltaT) # 20Hz
-        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
+        volts = mySerializer.voltage()
+        amps = myAmps.value()
+        deltaT = time.time() - start
+        time.sleep(max(0, (0.05 - deltaT))) # 20Hz
+        print "Sonar:", sonar, "IR:", round(ir, 1), "Volts:", round(volts, 2), "Amps:", round(amps, 2), "Time:", round(time.time() - start, 3)
     
     mySerializer.stop()
     mySerializer.close()
