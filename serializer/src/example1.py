@@ -1,6 +1,7 @@
 """
-    Example 1: Read values of a number of analog and digital sensors and control
-               one or more servos.
+    Example 1: Read values from a number of analog and digital sensors and control
+    one or more servos.
+    
     The Pi Robot Project: http://www.pirobot.org
     Copyright (c) 2010 Patrick Goebel.  All right reserved.
 

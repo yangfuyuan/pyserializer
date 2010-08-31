@@ -1,5 +1,6 @@
 """
     Example 3: Multiple sensors.
+    
     The Pi Robot Project: http://www.pirobot.org
     Copyright (c) 2010 Patrick Goebel.  All right reserved.
 
