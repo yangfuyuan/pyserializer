@@ -50,9 +50,13 @@ myIR = Serializer.GP2D12(mySerializer, 4)
 myTemp = Serializer.PhidgetsTemperature(mySerializer, 0, "F")
 myAmps = Serializer.PhidgetsCurrent(mySerializer, 1, model=20, ac_dc="dc")
 
-print "Connecting to Serializer on port", portName, "...",
-mySerializer.connect()
-print "Connected!"
+try:
+    print "Connecting to Serializer on port", portName, "...",
+    mySerializer.connect()
+    print "Connected!"
+except:
+    print "Cannot connect to Serializer!"
+    os._exit(1)
 
 print "Firmware Version", mySerializer.fw()
 print "Units", mySerializer.get_units()

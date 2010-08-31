@@ -41,21 +41,25 @@ mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
 myPing = Serializer.Ping(mySerializer, 4)
 myIR = Serializer.GP2D12(mySerializer, 4)
 
-print "Connecting to Serializer on port", portName, "...",
-mySerializer.connect()
-print "Connected!"
+try:
+    print "Connecting to Serializer on port", portName, "...",
+    mySerializer.connect()
+    print "Connected!"
+except:
+    print "Cannot connect to Serializer!"
+    os._exit(1)
 
 class Thread1(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.finished = threading.Event()
-        self.interval = 0.05
+        self.interval = 0.05 # Access the sensors 20 times per second.
         self.daemon = False
         self.count = 0
 
     def run(self):
         while not self.finished.isSet():
-            print "Reading from Thread 1:", round(myIR.value(), 1), myPing.value()
+            print "Reading from Thread 1 IR:", round(myIR.value(), 1), "Sonar:", myPing.value()
             time.sleep(self.interval)
             
     def stop(self):
@@ -68,13 +72,13 @@ class Thread2(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.finished = threading.Event()
-        self.interval = 0.05
+        self.interval = 0.5  # Access the voltage 2 times per second.
         self.daemon = False
         self.count = 0
 
     def run(self):
         while not self.finished.isSet():
-            print "Reading from Thread 2:", round(myIR.value(), 1), myPing.value()
+            print "Reading from Thread 2 Serializer Voltage", round(mySerializer.voltage(), 1)
             time.sleep(self.interval)
             
     def stop(self):

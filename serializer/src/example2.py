@@ -34,9 +34,13 @@ baudRate = 19200 # Change this to your Serializer baud rate!
 
 mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
 
-print "Connecting to Serializer on port", portName, "...",
-mySerializer.connect()
-print "Connected!"
+try:
+    print "Connecting to Serializer on port", portName, "...",
+    mySerializer.connect()
+    print "Connected!"
+except:
+    print "Cannot connect to Serializer!"
+    os._exit(1)
 
 print "Firmware Version", mySerializer.fw()
 print "Units", mySerializer.get_units()
