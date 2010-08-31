@@ -1,36 +1,37 @@
 """
-  Example 1: Read values of a number of analog and digital sensors and control
-             one or more servos.
-  The Pi Robot Project: http://www.pirobot.org
-  Copyright (c) 2010 Patrick Goebel.  All right reserved.
+    Example 1: Read values of a number of analog and digital sensors and control
+               one or more servos.
+    The Pi Robot Project: http://www.pirobot.org
+    Copyright (c) 2010 Patrick Goebel.  All right reserved.
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software Foundation,
-  Inc., 59 Temple
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    See http://www.gnu.org/licenses/gpl.html for details.
+      
+    NOTE: See the offical SerializerTM manual at:
+    http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
 """
 
 import serializer as Serializer
 import time, os
     
 if os.name == "posix":
-    portName = "/dev/ttyUSB0"
+    portName = "/dev/ttyUSB0" # Change this to your main Serializer port!
     # portName = "/dev/rfcomm0" # For bluetooth on Linux
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
-    portName = "COM12"
+    portName = "COM12" # Change this to your main Serializer port!
     
-baudRate = 19200
+baudRate = 19200 # Change this to your Serializer baud rate!
 
 mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
 

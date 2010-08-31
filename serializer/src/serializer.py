@@ -1,26 +1,24 @@
 """
-  A Python library for the Robotics Connection SerializerTM micro controller.
-  Created for The Pi Robot Project: http://www.pirobot.org
-  Copyright (c) 2010 Patrick Goebel.  All rights reserved.
+    A Python library for the Robotics Connection SerializerTM micro controller.
+    Created for The Pi Robot Project: http://www.pirobot.org
+    Copyright (c) 2010 Patrick Goebel.  All rights reserved.
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software Foundation,
-  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
-  NOTE: See the offical SerializerTM manual at:
-        http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    See http://www.gnu.org/licenses/gpl.html for details.
+      
+    NOTE: See the offical SerializerTM manual at:
+    http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
         
-Basic Usage:
+    Basic Usage:
 
     mySerializer = Serializer(port="COM12", baudrate=19200, timeout=1)
     myPing = Ping(mySerializer, 4)  
@@ -33,7 +31,7 @@ Basic Usage:
     mySerializer.stop()
     mySerializer.close()
     
-See the example files for more 
+    See the example files for more details.
 
 """
 
@@ -798,7 +796,7 @@ class Ping():
         return value
     
 
-''' Test Functions '''
+""" Basic test for connectivity """
 if __name__ == "__main__":
     import os
     
