@@ -852,27 +852,27 @@ if __name__ == "__main__":
     robot is ready to move safely!  You should also set the vpid, dpid, wheel diameter,
     wheel track and gear_reduction to match your robot.  (Default units are inches.)
     '''
-    mySerializer.set_vpid(2, 0, 5, 5)
-    mySerializer.set_dpid(1, 0, 0, 5)
-    mySerializer.set_wheel_diameter(5)
-    mySerializer.set_wheel_track(14)
-    mySerializer.set_gear_reduction(2)
-    mySerializer.travel_distance(5, 3)
-    while mySerializer.get_pids():
-        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
-        time.sleep(0.1)
-    mySerializer.rotate(90, 3)
-    while mySerializer.get_pids():
-        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
+#    mySerializer.set_vpid(2, 0, 5, 5)
+#    mySerializer.set_dpid(1, 0, 0, 5)
+#    mySerializer.set_wheel_diameter(5)
+#    mySerializer.set_wheel_track(14)
+#    mySerializer.set_gear_reduction(2)
+#    mySerializer.travel_distance(5, 3)
+#    while mySerializer.get_pids():
+#        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
+#        time.sleep(0.1)
+#    mySerializer.rotate(90, 3)
+#    while mySerializer.get_pids():
+#        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
     ''' * * * * * '''
     
-#    for x in range(50):
-#        start = time.clock()
-#        sonar = myPing.value()
-#        ir = myIR.value(cached=False)
-#        deltaT = time.clock() - start
-#        time.sleep(0.05 - deltaT) # 20Hz
-#        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
+    for x in range(50):
+        start = time.clock()
+        sonar = myPing.value()
+        ir = myIR.value(cached=False)
+        deltaT = time.clock() - start
+        time.sleep(0.05 - deltaT) # 20Hz
+        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
     
     mySerializer.stop()
     mySerializer.close()
