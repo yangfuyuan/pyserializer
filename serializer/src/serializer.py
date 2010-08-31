@@ -20,10 +20,22 @@
   NOTE: See the offical SerializerTM manual at:
         http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
         
-See the end of this file for examples.
+Basic Usage:
+
+    mySerializer = Serializer(port="COM12", baudrate=19200, timeout=1)
+    myPing = Ping(mySerializer, 4)  
+    myIR = GP2D12(mySerializer, 4)
+    mySerializer.connect()
+    
+    print myPing.value()
+    print myIR.value()
+    
+    mySerializer.stop()
+    mySerializer.close()
+    
+See the example files for more 
 
 """
-
 
 import serial
 import threading
@@ -661,6 +673,7 @@ class Serializer():
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, -ticks], [vel, vel])       
 
+
 class GP2D12():
     def __init__(self, serializer, pin):
         ''' Usage: myIR = GP2D12(serializer, pin)
@@ -691,6 +704,7 @@ class GP2D12():
         else:
             return value
         
+
 class PhidgetsTemperature():
     def __init__(self, serializer, pin, units="F"):
         ''' Usage: myTemp = PhidgetsTemperature(serializer, pin)
@@ -714,6 +728,7 @@ class PhidgetsTemperature():
         else:
             return 9. * tempC / 5. + 32.
     
+
 class PhidgetsVoltage():
     def __init__(self, serializer, pin):
         ''' Usage: myVolts = PhidgetsVoltage(serializer, pin)
@@ -732,6 +747,7 @@ class PhidgetsVoltage():
             value = self.serializer.sensor(self.pin)
         return 0.06 * (value - 500.)
     
+
 class PhidgetsCurrent():
     def __init__(self, serializer, pin, model=20, ac_dc="dc"):
         ''' Usage: myAmps = PhidgetsCurrent(serializer, pin)
@@ -784,7 +800,7 @@ class Ping():
 
 ''' Test Functions '''
 if __name__ == "__main__":
-    import time, os
+    import os
     
     if os.name == "posix":
         portName = "/dev/ttyUSB0"
@@ -797,85 +813,17 @@ if __name__ == "__main__":
     baudRate = 19200
   
     mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
-    myPing = Ping(mySerializer, 4)  
-    myIR = GP2D12(mySerializer, 4)
-    myTemp = PhidgetsTemperature(mySerializer, 0, "F")
-    myAmps = PhidgetsCurrent(mySerializer, 1, model=20, ac_dc="dc")
+    print "Connecting to Serializer on port", portName, "...",
     mySerializer.connect()
-    
-    ''' Test a number of functions 
-        The following sensors were attached to the corresponding pins for this test
-        * Ping Sonar on GPIO pin 4
-        * Phidgets Temperature Sensor on Analog pin 0
-        * Phidgets 20 amp Current Sensor on Analog pin 1
-        * Sharp GP2D12 IR sensor on Analog pin 4
-        * SFE Laser pointer module on GPIO pin 1
-        * HiTec servo on GPIO pin 5
-        * Devantech SP03 speech module on the I2C bus
-        * Devantech CMPS03 compass module on the I2C bus
-    '''
+    print "Connected!"
     
     print "Firmware Version", mySerializer.fw()
     print "Units", mySerializer.get_units()
     print "Baudrate", mySerializer.get_baud()
-    print "Encoder type", mySerializer.get_encoder()
-    print "Encoder counts", mySerializer.get_encoder_count([1, 2])
-    print "DPID params", mySerializer.get_dpid()
-    print "VPID params", mySerializer.get_vpid()
-    print "Wheel velocities", mySerializer.vel()
-    print "Raw analog port values for a few pins", mySerializer.sensor([0, 3, 5])
-    print "All Analog Sensor Values:", mySerializer.get_all_analog()
-    print "Analog values from the cache:", mySerializer.analog_sensor_cache
-    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
-    print "Temperature in Fahrenheit:", round(myTemp.value(), 1)
-    print "Current in Amps:", round(myAmps.value(), 2)
-    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
-    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
-    print "Sharp IR reading on analog pin 4:", myIR.value()
-    print "Sharp IR reading from cache:", myIR.value(cached=True)
-    print "Setting GPIO pin 1 to off turns the SFE laser on", mySerializer.set_io(1, 0)
-    #print "Getting values on GPIO pin 8 and 9:", mySerializer.get_io([8, 9])
-    #print "Say 'Hello' through the SP03 Speech Chip using the raw I2C command", mySerializer.i2c("w", 196, "0 0 0 5 3 72 101 108 108 111 0")
-    #print "Read back a given number of bytes from the I2C device:", mySerializer.i2c("r", 196, "2")
-    #print "Execute the pre-made speech command", mySerializer.i2c("w", 196, "0 64")
-    #print "SP03 Speech Chip on I2C bus", mySerializer.sp03("Greetings Humans!  Welcome to the future.")
-    #print "Devantech Compass on I2C bus:", mySerializer.get_compass()
-    #print "Devantech Compass reading using raw I2C commands", mySerializer.i2c("w", 192, "1"), mySerializer.i2c("r", 192, "1")
-    #print "Blinking the LEDs for 3 seconds"
-    #mySerializer.blink_led([1,2], [100, 100])
-    #time.sleep(3)
-    #mySerializer.blink_led([1,2], [0, 0])
-    #print "Test servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 75)
-        
-    ''' * * * * *
-    Caution!  Uncomment the following test functions only when you know your
-    robot is ready to move safely!  You should also set the vpid, dpid, wheel diameter,
-    wheel track and gear_reduction to match your robot.  (Default units are inches.)
-    '''
-#    mySerializer.set_vpid(2, 0, 5, 5)
-#    mySerializer.set_dpid(1, 0, 0, 5)
-#    mySerializer.set_wheel_diameter(5)
-#    mySerializer.set_wheel_track(14)
-#    mySerializer.set_gear_reduction(2)
-#    mySerializer.travel_distance(5, 3)
-#    while mySerializer.get_pids():
-#        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
-#        time.sleep(0.1)
-#    mySerializer.rotate(90, 3)
-#    while mySerializer.get_pids():
-#        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
-    ''' * * * * * '''
-    
-    while True:
-        start = time.time()
-        sonar = myPing.value()
-        ir = myIR.value(cached=False)
-        volts = mySerializer.voltage()
-        amps = myAmps.value()
-        deltaT = time.time() - start
-        time.sleep(max(0, (0.05 - deltaT))) # 20Hz
-        print "Sonar:", sonar, "IR:", round(ir, 1), "Volts:", round(volts, 2), "Amps:", round(amps, 2), "Time:", round(time.time() - start, 3)
+    print "Shutting down...",
     
     mySerializer.stop()
     mySerializer.close()
+    
+    print "Done."
     

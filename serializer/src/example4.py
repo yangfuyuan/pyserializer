@@ -1,5 +1,5 @@
 """
-  Serializer multi-thread example:
+ Example 4: Accessing the Serializer using multiple threads.
   The Pi Robot Project: http://www.pirobot.org
   Copyright (c) 2010 Patrick Goebel.  All right reserved.
 
@@ -19,12 +19,30 @@
 """
 
 import serializer as Serializer
-import threading, time
+import threading, time, os
 
-mySerializer = Serializer.Serializer(port="COM12", baudrate="19200", timeout=1)
+if os.name == "posix":
+    portName = "/dev/ttyUSB0"
+    # portName = "/dev/rfcomm0" # For bluetooth on Linux
+    # Note: On Linux, after connecting to the Bluetooth adapter, run the command
+    # sudo rfcomm bind /dev/rfcomm0
+else:
+    portName = "COM12"
+    
+baudRate = 19200
+
+mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+
+""" The following two lines assume we have a Ping sonar sensor attached to
+    GPIO pin 4 and a Sharp GP2D12 IR sensor to anlog pin 4.
+"""
+
 myPing = Serializer.Ping(mySerializer, 4)
 myIR = Serializer.GP2D12(mySerializer, 4)
+
+print "Connecting to Serializer on port", portName, "...",
 mySerializer.connect()
+print "Connected!"
 
 class Thread1(threading.Thread):
     def __init__(self):
@@ -74,3 +92,7 @@ time.sleep(5)
 
 thread1.stop()
 thread2.stop()
+
+mySerializer.stop()
+mySerializer.close()
+
