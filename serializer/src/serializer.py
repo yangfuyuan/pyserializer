@@ -19,7 +19,11 @@
   
   NOTE: See the offical SerializerTM manual at:
         http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
+        
+See the end of this file for examples.
+
 """
+
 
 import serial
 import threading
@@ -641,12 +645,12 @@ class Serializer():
     def set_encoder_resolution(self, ticks):
         self.encoder_resolution = ticks
         
-    def get_encoder_resoluton(self):
+    def get_encoder_resolution(self):
         return self.encoder_resolution
          
     def travel_distance(self, dist, vel):
         revs = dist / self.wheel_diameter
-        ticks = revs * self.encoder_resoluton / self.gear_reduction
+        ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
     def rotate(self, angle, vel):
@@ -654,7 +658,7 @@ class Serializer():
         rotation_fraction = angle / 360.
         rotation_dist = rotation_fraction * full_rotation_dist
         revs = rotation_dist / self.wheel_diameter
-        ticks = revs * self.encoder_resoluton / self.gear_reduction
+        ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, -ticks], [vel, vel])       
 
 class GP2D12():
@@ -792,12 +796,12 @@ if __name__ == "__main__":
         
     baudRate = 19200
   
-    mySer = Serializer(port=portName, baudrate=baudRate, timeout=1)
-    myPing = Ping(mySer, 4)  
-    myIR = GP2D12(mySer, 4)
-    myTemp = PhidgetsTemperature(mySer, 0, "F")
-    myAmps = PhidgetsCurrent(mySer, 1, model=20, ac_dc="dc")
-    mySer.connect()
+    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+    myPing = Ping(mySerializer, 4)  
+    myIR = GP2D12(mySerializer, 4)
+    myTemp = PhidgetsTemperature(mySerializer, 0, "F")
+    myAmps = PhidgetsCurrent(mySerializer, 1, model=20, ac_dc="dc")
+    mySerializer.connect()
     
     ''' Test a number of functions 
         The following sensors were attached to the corresponding pins for this test
@@ -811,65 +815,65 @@ if __name__ == "__main__":
         * Devantech CMPS03 compass module on the I2C bus
     '''
     
-    print "Firmware Version", mySer.fw()
-    print "Units", mySer.get_units()
-    print "Baudrate", mySer.get_baud()
-    print "Encoder type", mySer.get_encoder()
-    print "Encoder counts", mySer.get_encoder_count([1, 2])
-    print "DPID params", mySer.get_dpid()
-    print "VPID params", mySer.get_vpid()
-    print "Wheel velocities", mySer.vel()
-    print "Raw analog port values for a few pins", mySer.sensor([0, 3, 5])
-    print "All Analog Sensor Values:", mySer.get_all_analog()
-    print "Analog values from the cache:", mySer.analog_sensor_cache
-    print "Serializer voltage from the cache", mySer.voltage(cached=True)
+    print "Firmware Version", mySerializer.fw()
+    print "Units", mySerializer.get_units()
+    print "Baudrate", mySerializer.get_baud()
+    print "Encoder type", mySerializer.get_encoder()
+    print "Encoder counts", mySerializer.get_encoder_count([1, 2])
+    print "DPID params", mySerializer.get_dpid()
+    print "VPID params", mySerializer.get_vpid()
+    print "Wheel velocities", mySerializer.vel()
+    print "Raw analog port values for a few pins", mySerializer.sensor([0, 3, 5])
+    print "All Analog Sensor Values:", mySerializer.get_all_analog()
+    print "Analog values from the cache:", mySerializer.analog_sensor_cache
+    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
     print "Temperature in Fahrenheit:", round(myTemp.value(), 1)
     print "Current in Amps:", round(myAmps.value(), 2)
-    print "Ping Sonar reading on digital pin 4:", mySer.pping(4)
-    print "Ping reading from the cache:", myPing.value(cached=True)
+    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
+    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
     print "Sharp IR reading on analog pin 4:", myIR.value()
     print "Sharp IR reading from cache:", myIR.value(cached=True)
-    print "Setting GPIO pin 1 to off turns the SFE laser on", mySer.set_io(1, 0)
-    #print "Getting values on GPIO pin 8 and 9:", mySer.get_io([8, 9])
-    #print "Say 'Hello' through the SP03 Speech Chip using the raw I2C command", mySer.i2c("w", 196, "0 0 0 5 3 72 101 108 108 111 0")
-    #print "Read back a given number of bytes from the I2C device:", mySer.i2c("r", 196, "2")
-    #print "Execute the pre-made speech command", mySer.i2c("w", 196, "0 64")
-    #print "SP03 Speech Chip on I2C bus", mySer.sp03("Greetings Humans!  Welcome to the future.")
-    #print "Devantech Compass on I2C bus:", mySer.get_compass()
-    #print "Devantech Compass reading using raw I2C commands", mySer.i2c("w", 192, "1"), mySer.i2c("r", 192, "1")
+    print "Setting GPIO pin 1 to off turns the SFE laser on", mySerializer.set_io(1, 0)
+    #print "Getting values on GPIO pin 8 and 9:", mySerializer.get_io([8, 9])
+    #print "Say 'Hello' through the SP03 Speech Chip using the raw I2C command", mySerializer.i2c("w", 196, "0 0 0 5 3 72 101 108 108 111 0")
+    #print "Read back a given number of bytes from the I2C device:", mySerializer.i2c("r", 196, "2")
+    #print "Execute the pre-made speech command", mySerializer.i2c("w", 196, "0 64")
+    #print "SP03 Speech Chip on I2C bus", mySerializer.sp03("Greetings Humans!  Welcome to the future.")
+    #print "Devantech Compass on I2C bus:", mySerializer.get_compass()
+    #print "Devantech Compass reading using raw I2C commands", mySerializer.i2c("w", 192, "1"), mySerializer.i2c("r", 192, "1")
     #print "Blinking the LEDs for 3 seconds"
-    #mySer.blink_led([1,2], [100, 100])
+    #mySerializer.blink_led([1,2], [100, 100])
     #time.sleep(3)
-    #mySer.blink_led([1,2], [0, 0])
-    #print "Test servo on GPIO pin 5 (servo ID 6)", mySer.servo(6, 75)
+    #mySerializer.blink_led([1,2], [0, 0])
+    #print "Test servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 75)
         
     ''' * * * * *
     Caution!  Uncomment the following test functions only when you know your
     robot is ready to move safely!  You should also set the vpid, dpid, wheel diameter,
     wheel track and gear_reduction to match your robot.  (Default units are inches.)
     '''
-#    mySer.set_vpid(2, 0, 5, 5)
-#    mySer.set_dpid(1, 0, 0, 5)
-#    mySer.set_wheel_diameter(5)
-#    mySer.set_wheel_track(14)
-#    mySer.set_gear_reduction(2)
-#    mySer.travel_distance(5, 3)
-#    while mySer.get_pids():
-#        print "Wheel velocities", mySer.vel(), "Encoder counts:", mySer.get_encoder_count([1, 2])
-#        time.sleep(0.1)
-#    mySer.rotate(90, 3)
-#    while mySer.get_pids():
-#        print "Wheel velocities", mySer.vel(), "Encoder counts:", mySer.get_encoder_count([1, 2])
+    mySerializer.set_vpid(2, 0, 5, 5)
+    mySerializer.set_dpid(1, 0, 0, 5)
+    mySerializer.set_wheel_diameter(5)
+    mySerializer.set_wheel_track(14)
+    mySerializer.set_gear_reduction(2)
+    mySerializer.travel_distance(5, 3)
+    while mySerializer.get_pids():
+        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
+        time.sleep(0.1)
+    mySerializer.rotate(90, 3)
+    while mySerializer.get_pids():
+        print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
     ''' * * * * * '''
     
-    for x in range(50):
-        #analog = mySer.get_all_analog()
-        start = time.clock()
-        sonar = myPing.value()
-        ir = myIR.value(cached=False)
-        deltaT = time.clock() - start
-        time.sleep(0.05 - deltaT) # 20Hz
-        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
-    mySer.stop()
-    mySer.close()
+#    for x in range(50):
+#        start = time.clock()
+#        sonar = myPing.value()
+#        ir = myIR.value(cached=False)
+#        deltaT = time.clock() - start
+#        time.sleep(0.05 - deltaT) # 20Hz
+#        print "Sonar:", sonar, "IR:", round(ir, 1), "Time:", round(time.clock() - start, 3)
+    
+    mySerializer.stop()
+    mySerializer.close()
     
