@@ -670,11 +670,17 @@ class Serializer():
         return self.encoder_resolution
          
     def travel_distance(self, dist, vel):
+        ''' Move forward or backward 'dist' inches at speed 'vel'.  Use negative distances
+            to move backward.
+        '''
         revs = dist / self.wheel_diameter
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
     def rotate(self, angle, vel):
+        ''' Rotate the robot through 'angle' degrees at speed 'vel'.  Use negative angles to rotate
+            in the other direction.
+        '''
         full_rotation_dist = self.wheel_track * math.pi
         rotation_fraction = angle / 360.
         rotation_dist = rotation_fraction * full_rotation_dist
