@@ -13,9 +13,9 @@
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU General Public License for more details at:
     
-    See http://www.gnu.org/licenses/gpl.html for details.
+    http://www.gnu.org/licenses/gpl.html
       
     NOTE: See the offical SerializerTM manual at:
     http://www.roboticsconnection.com/multimedia/docs/Serializer_3.0_UserGuide.pdf
