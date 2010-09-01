@@ -33,7 +33,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1)
 
 try:
     print "Connecting to Serializer on port", portName, "...",

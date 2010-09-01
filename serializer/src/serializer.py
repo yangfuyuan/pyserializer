@@ -766,16 +766,16 @@ class PhidgetsCurrent():
             value = self.serializer.analog_sensor_cache[self.pin]
         else:
             value = self.serializer.sensor(self.pin)
-            if self.model == 20:
-                if self.ac_dc == "dc":
-                    return 0.05 * (value - 500.)
-                else:
-                    return 0.025 * value
+        if self.model == 20:
+            if self.ac_dc == "dc":
+                return 0.05 * (value - 500.)
             else:
-                if self.ac_dc == "dc":
-                    return 0.125 * (value - 500.)
-                else:
-                    return 0.625 * value 
+                return 0.025 * value
+        else:
+            if self.ac_dc == "dc":
+                return 0.125 * (value - 500.)
+            else:
+                return 0.625 * value 
 
 class Ping():
     def __init__(self, serializer, pin):

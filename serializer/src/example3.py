@@ -33,7 +33,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1)
 
 """ The following sensors were attached to the corresponding pins for this example.
     * Ping Sonar on GPIO pin 4
@@ -89,18 +89,18 @@ time.sleep(3)
 mySerializer.blink_led([1,2], [0, 0])
 print "Test servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 75)
 
-""" Poll a number of sensors 50 times at a rate of 20 times per second. """
+""" Poll a number of sensors 50 times at a rate of 10 times per second. """
 for i in range(50):
     start = time.time()
     sonar = myPing.value()
-    ir = myIR.value(cached=False)
-    volts = mySerializer.voltage()
-    amps = myAmps.value()
+    mySerializer.get_all_analog()
+    ir = myIR.value(cached=True)
+    volts = mySerializer.voltage(cached=True)
+    amps = myAmps.value(cached=True)
     deltaT = time.time() - start
-    time.sleep(max(0, (0.05 - deltaT))) # 20Hz
-    print "Sonar:", sonar, "IR:", round(ir, 1), "Volts:", round(volts, 2), "Amps:", round(amps, 2), "Time:", round(time.time() - start, 3)
+    time.sleep(max(0, (0.1 - deltaT))) # 10Hz
+    print "Time:", round(time.time() - start, 3), "Sonar:", sonar, "IR:", round(ir, 1), "Volts:", round(volts, 2), "Amps:", round(amps, 2)
 
-    
 mySerializer.stop()
 mySerializer.close()
 

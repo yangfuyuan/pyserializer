@@ -33,7 +33,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1)
 
 """ The following two lines assume we have a Ping sonar sensor attached to
     GPIO pin 4 and a Sharp GP2D12 IR sensor to anlog pin 4.
@@ -60,7 +60,8 @@ class Thread1(threading.Thread):
 
     def run(self):
         while not self.finished.isSet():
-            print "Reading from Thread 1 IR:", round(myIR.value(), 1), "Sonar:", myPing.value()
+            output = "Thread 1 IR: " + str(round(myIR.value(), 1)) + " Sonar: " +  str(myPing.value())
+            print output
             time.sleep(self.interval)
             
     def stop(self):
@@ -79,7 +80,8 @@ class Thread2(threading.Thread):
 
     def run(self):
         while not self.finished.isSet():
-            print "Reading from Thread 2 Serializer Voltage", round(mySerializer.voltage(), 1)
+            output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1))
+            print output
             time.sleep(self.interval)
             
     def stop(self):

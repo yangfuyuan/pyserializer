@@ -34,7 +34,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1)
 
 """ The following two lines assume we have a Ping sonar sensor attached to
     GPIO pin 4 and a Sharp GP2D12 IR sensor to anlog pin 4.
