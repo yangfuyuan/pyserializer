@@ -20,10 +20,10 @@
         
     Basic Usage:
 
-    mySerializer = Serializer(port="COM12", baudrate=19200, timeout=1)
+    mySerializer = Serializer(port="COM12", baudrate=19200, timeout=5)
+    mySerializer.connect()
     myPing = Ping(mySerializer, 4)  
     myIR = GP2D12(mySerializer, 4)
-    mySerializer.connect()
     
     print myPing.value()
     print myIR.value()
@@ -38,6 +38,8 @@
 import serial
 import threading
 import math
+import os
+from serial.serialutil import SerialException
 
 class Serializer(): 
     I2C_READ = 'r'
@@ -64,7 +66,16 @@ class Serializer():
         self.messageLock = threading.Lock()
     
     def connect(self):
-        self.port = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.timeout) 
+        try:
+            print "Connecting to Serializer on port", self.port, "..."
+            self.port = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.timeout)
+            if self.get_baud() != self.baudrate:
+                raise SerialException
+            print "Connected at", self.baudrate, "baud."
+        except SerialException:
+            print "Cannot connect to Serializer!"
+            print "Make sure you are plugged in and turned on."
+            os._exit(1)           
 
     def open(self): 
         ''' Open the serial port.
@@ -810,10 +821,8 @@ if __name__ == "__main__":
         
     baudRate = 19200
   
-    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=1)
-    print "Connecting to Serializer on port", portName, "...",
+    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=5)
     mySerializer.connect()
-    print "Connected!"
     
     print "Firmware Version", mySerializer.fw()
     print "Units", mySerializer.get_units()

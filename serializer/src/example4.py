@@ -33,7 +33,8 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=5)
+mySerializer.connect()
 
 """ The following two lines assume we have a Ping sonar sensor attached to
     GPIO pin 4 and a Sharp GP2D12 IR sensor to anlog pin 4.
@@ -41,14 +42,6 @@ mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=1
 
 myPing = Serializer.Ping(mySerializer, 4)
 myIR = Serializer.GP2D12(mySerializer, 4)
-
-try:
-    print "Connecting to Serializer on port", portName, "...",
-    mySerializer.connect()
-    print "Connected!"
-except:
-    print "Cannot connect to Serializer!"
-    os._exit(1)
 
 class Thread1(threading.Thread):
     def __init__(self):
