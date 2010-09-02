@@ -7,4 +7,11 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/serializer/src</path>
 </pydev_pathproperty>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>/home/patrick/ros/ros/core/rospy</path>
+</pydev_pathproperty>
+<pydev_variables_property name="org.python.pydev.PROJECT_VARIABLE_SUBSTITUTION">
+<key>ROS_MASTER_URI</key>
+<value>http://localhost:11311</value>
+</pydev_variables_property>
 </pydev_project>

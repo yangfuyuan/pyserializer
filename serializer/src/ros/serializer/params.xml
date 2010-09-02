@@ -1,0 +1,6 @@
+background_b: 255
+background_g: 200
+background_r: 0
+roslaunch:
+  uris: {host_ubuntu__41614: 'http://ubuntu:41614/'}
+run_id: e9110e50-b6c3-11df-9fe3-000c2927904c
