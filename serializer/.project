@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.python.pydev.pythonNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>ROS</name>
+			<type>2</type>
+			<location>/home/patrick/Eclipse/ROS/serializer</location>
+		</link>
+	</linkedResources>
 </projectDescription>
