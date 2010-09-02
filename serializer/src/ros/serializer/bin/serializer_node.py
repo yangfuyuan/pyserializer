@@ -4,9 +4,11 @@ os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'
 import roslib; roslib.load_manifest('serializer')
 import rospy
 from std_msgs.msg import String
-def talker():
-    pub = rospy.Publisher('chatter', String)
-    rospy.init_node('talker')
+import serializer as Serializer
+
+def SerializerROS():
+    pub = rospy.Publisher('sensors', String)
+    rospy.init_node('serializer')
     while not rospy.is_shutdown():
         str = "hello world %s"%rospy.get_time()
         rospy.loginfo(str)
@@ -14,5 +16,5 @@ def talker():
         rospy.sleep(1.0)
 if __name__ == '__main__':
     try:
-        talker()
+        SerializerROS()
     except rospy.ROSInterruptException: pass
