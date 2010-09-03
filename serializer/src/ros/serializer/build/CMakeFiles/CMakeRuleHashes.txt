@@ -8,7 +8,7 @@ f7ba35c5f1f7e90b0973a94d43c0a2ac ../src/serializer/srv/_GetDigital.py
 6103c3adf33ad938b04040670e0eb7fb ../src/serializer/srv/_RotateAngle.py
 22ee8593a32f79040bbed7934588c317 ../src/serializer/srv/_SetDigital.py
 0d50b8ae944d8268b333240b37a49bb7 ../src/serializer/srv/_TravelDistance.py
-0b7b16989e3e210995e86955d0802f3a ../src/serializer/srv/__init__.py
+ddbf8a7d9233dde166cf12085d75601f ../src/serializer/srv/__init__.py
 3ebb95de79ee5bf535dd6675adfbd5a8 ../srv/cpp/serializer/GetAnalog.h
 c4a6c05ad8d9915bc738ade1bf563e85 ../srv/cpp/serializer/GetDigital.h
 b9bcf85dcc0b3def1e7d8bbca8af08fd ../srv/cpp/serializer/IsMoving.h

@@ -68,8 +68,8 @@ CMakeFiles/ROSBUILD_genmsg_py: ../src/serializer/msg/__init__.py
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../src/serializer/msg/_Sonar.py: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
-../src/serializer/msg/_Sonar.py: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+../src/serializer/msg/_Sonar.py: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
+../src/serializer/msg/_Sonar.py: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/serializer/msg/_Sonar.py"
 	/home/patrick/ros/ros/core/rospy/scripts/genmsg_py --noinitpy /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg

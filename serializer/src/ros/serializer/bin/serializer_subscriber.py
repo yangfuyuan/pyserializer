@@ -29,18 +29,23 @@ from std_msgs.msg import Float32
 #import driver.serializer as SerializerAPI
 import serializer_driver as SerializerAPI 
 
-#!/usr/bin/env python
-import roslib; roslib.load_manifest('beginner_tutorials')
-import rospy
-from std_msgs.msg import String
-def callback(data):
-    rospy.loginfo(rospy.get_name()+"I heard %s",data.data)
-
-def listener():
-    rospy.init_node('listener', anonymous=True)
-    rospy.Subscriber("chatter", String, callback)
-    rospy.spin()
-
+def SerializerROS():
+    pub = rospy.Publisher('sensors', Float32)
+    rospy.init_node('serializer')
+    rate = rospy.Rate(10)
+    mySerializer = SerializerAPI.Serializer(port="/dev/ttyUSB0")
+    mySerializer.connect()
+    sensors = dict({})
+    head_sonar = SerializerAPI.Ping(mySerializer, 4)
+    head_ir = SerializerAPI.GP2D12(mySerializer, 4)
+    while not rospy.is_shutdown():
+        #str = "hello world %s"%rospy.get_time()
+        sensors['head_ir'] = head_sonar.value()
+        sensors['head_sonar'] = head_ir.value()
+        rospy.loginfo(sensors)
+        pub.publish(Float32(sensors))
+        rate.sleep()
 if __name__ == '__main__':
-    listener()
-
+    try:
+        SerializerROS()
+    except rospy.ROSInterruptException: pass

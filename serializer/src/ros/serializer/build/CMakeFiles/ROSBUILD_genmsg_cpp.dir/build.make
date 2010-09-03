@@ -63,8 +63,8 @@ CMakeFiles/ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/Sonar.h
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../msg/cpp/serializer/Sonar.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
-../msg/cpp/serializer/Sonar.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+../msg/cpp/serializer/Sonar.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
+../msg/cpp/serializer/Sonar.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../msg/cpp/serializer/Sonar.h"
 	/home/patrick/ros/ros/core/genmsg_cpp/genmsg /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg
