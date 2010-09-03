@@ -23,29 +23,18 @@ import sys
 sys.path.append("/home/patrick/ros/ros/core/roslib/src")
 os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'#os.environ['ROS_ROOT'] = '/home/patrick/ros/ros'
 
-import roslib; roslib.load_manifest('serializer')
+import roslib; roslib.load_manifest('beginner_tutorials')
 import rospy
 from std_msgs.msg import Float32
-#import driver.serializer as SerializerAPI
-import serializer_driver as SerializerAPI 
+def callback(data):
+    rospy.loginfo(rospy.get_name()+"I heard %s",data.data)
 
-def SerializerROS():
-    pub = rospy.Publisher('sensors', Float32)
-    rospy.init_node('serializer')
-    rate = rospy.Rate(10)
-    mySerializer = SerializerAPI.Serializer(port="/dev/ttyUSB0")
-    mySerializer.connect()
-    sensors = dict({})
-    head_sonar = SerializerAPI.Ping(mySerializer, 4)
-    head_ir = SerializerAPI.GP2D12(mySerializer, 4)
-    while not rospy.is_shutdown():
-        #str = "hello world %s"%rospy.get_time()
-        sensors['head_ir'] = head_sonar.value()
-        sensors['head_sonar'] = head_ir.value()
-        rospy.loginfo(sensors)
-        pub.publish(Float32(sensors))
-        rate.sleep()
+def listener():
+    rospy.init_node('listener', anonymous=True)
+    rospy.Subscriber("sensors", Float32, callback)
+    rospy.spin()
+
 if __name__ == '__main__':
-    try:
-        SerializerROS()
-    except rospy.ROSInterruptException: pass
+    
+    listener()
+
