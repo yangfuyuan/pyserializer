@@ -39,39 +39,66 @@ CMAKE_BINARY_DIR = /home/patrick/Eclipse/serializer/src/ros/serializer/build
 
 # Utility rule file for ROSBUILD_gensrv_cpp.
 
-CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/TravelDistance.h
+CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/IsMoving.h
+CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/SetDigital.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/GetAnalog.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/GetDigital.h
-CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/SetDigital.h
-CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/IsMoving.h
+CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/TravelDistance.h
 CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/RotateAngle.h
 
-../srv/cpp/serializer/TravelDistance.h: ../srv/TravelDistance.srv
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
-../srv/cpp/serializer/TravelDistance.h: ../manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslib/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/std_msgs/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslang/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rospy/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rosout/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/test/rostest/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/TravelDistance.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
+../srv/cpp/serializer/IsMoving.h: ../srv/IsMoving.srv
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
+../srv/cpp/serializer/IsMoving.h: ../manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslib/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/std_msgs/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslang/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rospy/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rosout/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/test/rostest/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/TravelDistance.h"
-	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/TravelDistance.srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/IsMoving.h"
+	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/IsMoving.srv
+
+../srv/cpp/serializer/SetDigital.h: ../srv/SetDigital.srv
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
+../srv/cpp/serializer/SetDigital.h: ../manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslib/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/std_msgs/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslang/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rospy/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rosout/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/test/rostest/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/SetDigital.h"
+	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/SetDigital.srv
 
 ../srv/cpp/serializer/GetAnalog.h: ../srv/GetAnalog.srv
 ../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
@@ -94,9 +121,9 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/RotateAngle.h
 ../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/GetAnalog.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/GetAnalog.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
+../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/GetAnalog.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/GetAnalog.h"
 	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/GetAnalog.srv
 
@@ -121,65 +148,38 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/RotateAngle.h
 ../srv/cpp/serializer/GetDigital.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../srv/cpp/serializer/GetDigital.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../srv/cpp/serializer/GetDigital.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/GetDigital.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/GetDigital.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_3)
+../srv/cpp/serializer/GetDigital.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/GetDigital.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/GetDigital.h"
 	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/GetDigital.srv
 
-../srv/cpp/serializer/SetDigital.h: ../srv/SetDigital.srv
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
-../srv/cpp/serializer/SetDigital.h: ../manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslib/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/std_msgs/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roslang/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rospy/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/core/rosout/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/test/rostest/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/SetDigital.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_4)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/SetDigital.h"
-	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/SetDigital.srv
-
-../srv/cpp/serializer/IsMoving.h: ../srv/IsMoving.srv
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
-../srv/cpp/serializer/IsMoving.h: ../manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslib/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/std_msgs/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roslang/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rospy/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/core/rosout/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/test/rostest/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/IsMoving.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: ../srv/TravelDistance.srv
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
+../srv/cpp/serializer/TravelDistance.h: ../manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslib/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/std_msgs/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roslang/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rospy/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/core/rosout/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/test/rostest/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/TravelDistance.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_5)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/IsMoving.h"
-	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/IsMoving.srv
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/TravelDistance.h"
+	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/TravelDistance.srv
 
 ../srv/cpp/serializer/RotateAngle.h: ../srv/RotateAngle.srv
 ../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/ros/core/genmsg_cpp/gensrv
@@ -202,18 +202,18 @@ CMakeFiles/ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/RotateAngle.h
 ../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../srv/cpp/serializer/RotateAngle.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../srv/cpp/serializer/RotateAngle.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
+../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../srv/cpp/serializer/RotateAngle.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../srv/cpp/serializer/RotateAngle.h"
 	/home/patrick/ros/ros/core/genmsg_cpp/gensrv /home/patrick/Eclipse/serializer/src/ros/serializer/srv/RotateAngle.srv
 
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp
-ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/TravelDistance.h
+ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/IsMoving.h
+ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/SetDigital.h
 ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/GetAnalog.h
 ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/GetDigital.h
-ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/SetDigital.h
-ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/IsMoving.h
+ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/TravelDistance.h
 ROSBUILD_gensrv_cpp: ../srv/cpp/serializer/RotateAngle.h
 ROSBUILD_gensrv_cpp: CMakeFiles/ROSBUILD_gensrv_cpp.dir/build.make
 .PHONY : ROSBUILD_gensrv_cpp

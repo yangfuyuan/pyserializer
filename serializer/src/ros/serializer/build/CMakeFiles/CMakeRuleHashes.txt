@@ -1,14 +1,16 @@
 # Hashes of file build rules.
+6ce7a5065cd39e181e209b4359a7445f ../msg/cpp/serializer/SensorState.h
 ce20115f9a8670057e7a0ae76eeac4cf ../msg/cpp/serializer/Sonar.h
+c3e3ca7c9e1fde0ac0ece05ef27544a6 ../src/serializer/msg/_SensorState.py
 90e311ded2919f6ad7346ce708bcb486 ../src/serializer/msg/_Sonar.py
-9a362ebe214f4574e40bd4a52203c45a ../src/serializer/msg/__init__.py
+62b36c2d3b23ffe80c1f36d6052ecd66 ../src/serializer/msg/__init__.py
 7999bd86ed842896ebd3f214892be607 ../src/serializer/srv/_GetAnalog.py
 f7ba35c5f1f7e90b0973a94d43c0a2ac ../src/serializer/srv/_GetDigital.py
 1df9ca6820e883ddfc6bf854b446e300 ../src/serializer/srv/_IsMoving.py
 6103c3adf33ad938b04040670e0eb7fb ../src/serializer/srv/_RotateAngle.py
 22ee8593a32f79040bbed7934588c317 ../src/serializer/srv/_SetDigital.py
 0d50b8ae944d8268b333240b37a49bb7 ../src/serializer/srv/_TravelDistance.py
-ddbf8a7d9233dde166cf12085d75601f ../src/serializer/srv/__init__.py
+0b7b16989e3e210995e86955d0802f3a ../src/serializer/srv/__init__.py
 3ebb95de79ee5bf535dd6675adfbd5a8 ../srv/cpp/serializer/GetAnalog.h
 c4a6c05ad8d9915bc738ade1bf563e85 ../srv/cpp/serializer/GetDigital.h
 b9bcf85dcc0b3def1e7d8bbca8af08fd ../srv/cpp/serializer/IsMoving.h

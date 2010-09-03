@@ -21,16 +21,17 @@
 import os
 import sys
 sys.path.append("/home/patrick/ros/ros/core/roslib/src")
-os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'#os.environ['ROS_ROOT'] = '/home/patrick/ros/ros'
+os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'
+os.environ['ROS_ROOT'] = '/home/patrick/ros/ros'
 
 import roslib; roslib.load_manifest('serializer')
 import rospy
-from std_msgs.msg import Float32
 #import driver.serializer as SerializerAPI
-import serializer_driver as SerializerAPI 
+import serializer_driver as SerializerAPI
+from msg import SensorState 
 
 def SerializerROS():
-    pub = rospy.Publisher('sensors', Float32)
+    pub = rospy.Publisher('sensors', SensorState)
     rospy.init_node('serializer')
     rate = rospy.Rate(10)
     mySerializer = SerializerAPI.Serializer(port="/dev/ttyUSB0")
@@ -38,12 +39,25 @@ def SerializerROS():
     sensors = dict({})
     head_sonar = SerializerAPI.Ping(mySerializer, 4)
     head_ir = SerializerAPI.GP2D12(mySerializer, 4)
+    seq = 0
     while not rospy.is_shutdown():
-        #str = "hello world %s"%rospy.get_time()
         sensors['head_ir'] = head_sonar.value()
         sensors['head_sonar'] = head_ir.value()
-        rospy.loginfo(sensors)
-        pub.publish(Float32(sensors))
+        
+        msg = SensorState()
+        msg.name = list()
+        msg.value = list()
+        
+        for sensor, value in sensors.iteritems():
+            msg.name.append(sensor)
+            msg.value.append(value)
+       
+        msg.header.stamp = rospy.Time.now()
+        seq += 1
+        msg.header.seq = seq
+        
+        rospy.loginfo(msg)
+        pub.publish(msg)
         rate.sleep()
 if __name__ == '__main__':
     try:

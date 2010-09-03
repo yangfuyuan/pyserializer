@@ -39,7 +39,36 @@ CMAKE_BINARY_DIR = /home/patrick/Eclipse/serializer/src/ros/serializer/build
 
 # Utility rule file for ROSBUILD_genmsg_cpp.
 
+CMakeFiles/ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/SensorState.h
 CMakeFiles/ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/Sonar.h
+
+../msg/cpp/serializer/SensorState.h: ../msg/SensorState.msg
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/genmsg_cpp/genmsg
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/roslib/scripts/gendeps
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/roslib/msg/Header.msg
+../msg/cpp/serializer/SensorState.h: ../manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/tools/rospack/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/roslib/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/std_msgs/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/roslang/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/rospy/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/rosconsole/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/roscpp/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/core/rosout/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/test/rostest/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../msg/cpp/serializer/SensorState.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_1)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../msg/cpp/serializer/SensorState.h"
+	/home/patrick/ros/ros/core/genmsg_cpp/genmsg /home/patrick/Eclipse/serializer/src/ros/serializer/msg/SensorState.msg
 
 ../msg/cpp/serializer/Sonar.h: ../msg/Sonar.msg
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/core/genmsg_cpp/genmsg
@@ -63,13 +92,14 @@ CMakeFiles/ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/Sonar.h
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../msg/cpp/serializer/Sonar.h: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../msg/cpp/serializer/Sonar.h: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../msg/cpp/serializer/Sonar.h: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_1)
+../msg/cpp/serializer/Sonar.h: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../msg/cpp/serializer/Sonar.h: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../msg/cpp/serializer/Sonar.h"
 	/home/patrick/ros/ros/core/genmsg_cpp/genmsg /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg
 
 ROSBUILD_genmsg_cpp: CMakeFiles/ROSBUILD_genmsg_cpp
+ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/SensorState.h
 ROSBUILD_genmsg_cpp: ../msg/cpp/serializer/Sonar.h
 ROSBUILD_genmsg_cpp: CMakeFiles/ROSBUILD_genmsg_cpp.dir/build.make
 .PHONY : ROSBUILD_genmsg_cpp

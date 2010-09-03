@@ -1,5 +1,6 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/ROSBUILD_genmsg_cpp"
+  "../msg/cpp/serializer/SensorState.h"
   "../msg/cpp/serializer/Sonar.h"
 )
 

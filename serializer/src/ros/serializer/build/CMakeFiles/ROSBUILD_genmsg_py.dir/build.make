@@ -41,10 +41,39 @@ CMAKE_BINARY_DIR = /home/patrick/Eclipse/serializer/src/ros/serializer/build
 
 CMakeFiles/ROSBUILD_genmsg_py: ../src/serializer/msg/__init__.py
 
+../src/serializer/msg/__init__.py: ../src/serializer/msg/_SensorState.py
 ../src/serializer/msg/__init__.py: ../src/serializer/msg/_Sonar.py
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/serializer/msg/__init__.py"
-	/home/patrick/ros/ros/core/rospy/scripts/genmsg_py --initpy /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg
+	/home/patrick/ros/ros/core/rospy/scripts/genmsg_py --initpy /home/patrick/Eclipse/serializer/src/ros/serializer/msg/SensorState.msg /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg
+
+../src/serializer/msg/_SensorState.py: ../msg/SensorState.msg
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/rospy/scripts/genmsg_py
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/roslib/scripts/gendeps
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/roslib/msg/Header.msg
+../src/serializer/msg/_SensorState.py: ../manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/genmsg_cpp/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/tools/rospack/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/roslib/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/std_msgs/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/roslang/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/rospy/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/3rdparty/xmlrpcpp/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/rosconsole/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/roscpp/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/3rdparty/pycrypto/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/3rdparty/paramiko/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/core/rosout/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/tools/roslaunch/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/test/rostest/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../src/serializer/msg/_SensorState.py: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/serializer/msg/_SensorState.py"
+	/home/patrick/ros/ros/core/rospy/scripts/genmsg_py --noinitpy /home/patrick/Eclipse/serializer/src/ros/serializer/msg/SensorState.msg
 
 ../src/serializer/msg/_Sonar.py: ../msg/Sonar.msg
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/core/rospy/scripts/genmsg_py
@@ -68,14 +97,15 @@ CMakeFiles/ROSBUILD_genmsg_py: ../src/serializer/msg/__init__.py
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/topic_tools/manifest.xml
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/rosrecord/manifest.xml
 ../src/serializer/msg/_Sonar.py: /home/patrick/ros/ros/tools/rosbagmigration/manifest.xml
-../src/serializer/msg/_Sonar.py: /opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/manifest.xml
-../src/serializer/msg/_Sonar.py: /opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/manifest.xml
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_2)
+../src/serializer/msg/_Sonar.py: /home/patrick/ros/stacks/common_msgs/geometry_msgs/manifest.xml
+../src/serializer/msg/_Sonar.py: /home/patrick/ros/stacks/common_msgs/sensor_msgs/manifest.xml
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/patrick/Eclipse/serializer/src/ros/serializer/build/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating ../src/serializer/msg/_Sonar.py"
 	/home/patrick/ros/ros/core/rospy/scripts/genmsg_py --noinitpy /home/patrick/Eclipse/serializer/src/ros/serializer/msg/Sonar.msg
 
 ROSBUILD_genmsg_py: CMakeFiles/ROSBUILD_genmsg_py
 ROSBUILD_genmsg_py: ../src/serializer/msg/__init__.py
+ROSBUILD_genmsg_py: ../src/serializer/msg/_SensorState.py
 ROSBUILD_genmsg_py: ../src/serializer/msg/_Sonar.py
 ROSBUILD_genmsg_py: CMakeFiles/ROSBUILD_genmsg_py.dir/build.make
 .PHONY : ROSBUILD_genmsg_py

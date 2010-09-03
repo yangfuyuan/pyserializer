@@ -1,6 +1,7 @@
 FILE(REMOVE_RECURSE
   "CMakeFiles/ROSBUILD_genmsg_py"
   "../src/serializer/msg/__init__.py"
+  "../src/serializer/msg/_SensorState.py"
   "../src/serializer/msg/_Sonar.py"
 )
 

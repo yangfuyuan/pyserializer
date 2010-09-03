@@ -48,7 +48,7 @@ print "Baudrate", mySerializer.get_baud()
 myPing = Serializer.Ping(mySerializer, 4)
 myIR = Serializer.GP2D12(mySerializer, 4)
 
-print "Moving servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 75)
+print "Moving servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 50)
 
 for i in range(10):
     print "All Analog Sensor Values:", mySerializer.get_all_analog()

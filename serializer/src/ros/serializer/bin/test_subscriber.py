@@ -23,7 +23,7 @@ import sys
 sys.path.append("/home/patrick/ros/ros/core/roslib/src")
 os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'#os.environ['ROS_ROOT'] = '/home/patrick/ros/ros'
 
-import roslib; roslib.load_manifest('beginner_tutorials')
+import roslib; roslib.load_manifest('serializer')
 import rospy
 from std_msgs.msg import Float32
 def callback(data):

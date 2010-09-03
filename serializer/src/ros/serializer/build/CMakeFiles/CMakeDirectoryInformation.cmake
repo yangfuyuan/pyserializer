@@ -11,10 +11,10 @@ SET(CMAKE_FORCE_UNIX_PATHS 1)
 # The C and CXX include file search paths:
 SET(CMAKE_C_INCLUDE_PATH
   "../include"
-  "/opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/include"
-  "/opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/msg/cpp"
-  "/opt/ros/boxturtle/stacks/common_msgs/sensor_msgs/srv/cpp"
-  "/opt/ros/boxturtle/stacks/common_msgs/geometry_msgs/msg/cpp"
+  "/home/patrick/ros/stacks/common_msgs/sensor_msgs/include"
+  "/home/patrick/ros/stacks/common_msgs/sensor_msgs/msg/cpp"
+  "/home/patrick/ros/stacks/common_msgs/sensor_msgs/srv/cpp"
+  "/home/patrick/ros/stacks/common_msgs/geometry_msgs/msg/cpp"
   "/home/patrick/ros/ros/tools/rosrecord/include"
   "/home/patrick/ros/ros/tools/topic_tools/include"
   "/home/patrick/ros/ros/tools/topic_tools/srv/cpp"
