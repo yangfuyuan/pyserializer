@@ -7,7 +7,7 @@ os.environ['ROS_MASTER_URI'] = 'http://localhost:11311'
 import roslib; roslib.load_manifest('serializer')
 import rospy
 from std_msgs.msg import String
-import serializer as SerializerAPI
+import serializer_driver as SerializerAPI
 
 def SerializerROS():
     pub = rospy.Publisher('sensors', String)
