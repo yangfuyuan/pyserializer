@@ -266,6 +266,7 @@ class Serializer():
             The cfg units command without a parameter returns the value
             currently stored in EEPROM.
         '''
+        self.units = units
         return self.execute_int('cfg units %d' %units);
 
     def get_encoder_count(self, id):
