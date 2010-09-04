@@ -55,6 +55,7 @@ class Serializer():
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
+        self.units = 1
         self.wheel_diameter = self.WHEEL_DIAMETER
         self.wheel_track = self.WHEEL_TRACK
         self.encoder_resolution = self.ENCODER_RESOLUTION
@@ -71,6 +72,7 @@ class Serializer():
             self.port = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.timeout)
             if self.get_baud() != self.baudrate:
                 raise SerialException
+            self.units = self.get_units()
             print "Connected at", self.baudrate, "baud."
         except SerialException:
             print "Cannot connect to Serializer!"
@@ -710,11 +712,10 @@ class GP2D12():
         except:
             distance = 80
         if distance > 80: distance = 80
-        if distance < 10: distance = 10
-        units = self.serializer.get_units()
-        if units == 0:
+        if distance < 10: distance = 10   
+        if self.serializer.units == 0:
             return distance
-        elif units == 1:
+        elif self.serializer.units == 1:
             return distance / 2.54
         else:
             return value
@@ -730,7 +731,7 @@ class PhidgetsTemperature():
         '''
         self.serializer = serializer
         self.pin = pin
-        self.units = units
+        self.temp_units = units
     
     def value(self, cached=False):
         if cached and self.serializer.analog_sensor_cache[self.pin] != None:
@@ -738,7 +739,7 @@ class PhidgetsTemperature():
         else:
             value = self.serializer.sensor(self.pin)
         tempC = (value - 200.) / 4.
-        if self.units == "C":
+        if self.temp_units == "C":
             return tempC
         else:
             return 9. * tempC / 5. + 32.
