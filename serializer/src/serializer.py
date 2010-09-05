@@ -653,6 +653,8 @@ class Serializer():
             try:
                 return self.sensor(5) * 15. / 1024.
             except:
+                print "BAD VOLTAGE:", self.sensor(5)
+                os._exit(1)
                 pass
         
     def set_wheel_diameter(self, diameter):
