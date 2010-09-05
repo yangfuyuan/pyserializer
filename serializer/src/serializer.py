@@ -62,12 +62,10 @@ class Serializer():
         self.gear_reduction = self.GEAR_REDUCTION
         self.messageLock = threading.Lock()
         
-        ''' An array to cache analog sensor readings
-        '''
+        ''' An array to cache analog sensor readings'''
         self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
         
-        ''' An array to cache digital sensor readings
-        '''
+        ''' An array to cache digital sensor readings'''
         self.digital_sensor_cache = [None] * self.N_DIGITAL_PORTS
     
     def connect(self):
