@@ -60,11 +60,15 @@ class Serializer():
         self.wheel_track = self.WHEEL_TRACK
         self.encoder_resolution = self.ENCODER_RESOLUTION
         self.gear_reduction = self.GEAR_REDUCTION
-        ''' An array to cache analog sensor readings '''
-        self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
-        ''' An array to cache digital sensor readings '''
-        self.digital_sensor_cache = [None] * self.N_DIGITAL_PORTS
         self.messageLock = threading.Lock()
+        
+        ''' An array to cache analog sensor readings
+        '''
+        self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
+        
+        ''' An array to cache digital sensor readings
+        '''
+        self.digital_sensor_cache = [None] * self.N_DIGITAL_PORTS
     
     def connect(self):
         try:
@@ -646,7 +650,12 @@ class Serializer():
         if cached and self.analog_sensor_cache[5] != None:
             return self.analog_sensor_cache[5] * 15. / 1024.
         else:
-            return self.sensor(5) * 15. / 1024.
+            try:
+                return self.sensor(5) * 15. / 1024.
+            except:
+                print "BAD VOLTAGE:", self.sensor(5)
+                os._exit(1)
+                pass
         
     def set_wheel_diameter(self, diameter):
         self.wheel_diameter = diameter
