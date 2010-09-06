@@ -46,11 +46,11 @@ class Serializer():
     '''
     N_ANALOG_PORTS = 6
     N_DIGITAL_PORTS = 12
-    UNITS = 1 # 1 is inches, 0 is cm and 2 is "raw"
-    WHEEL_DIAMETER = 5  # units depend on UNITS
-    WHEEL_TRACK = 14    # units depend on UNITS
-    ENCODER_RESOLUTION = 624
-    GEAR_REDUCTION = 2
+    UNITS = 0                   # 1 is inches, 0 is metric (cm for sensors, meters for wheels measurements) and 2 is "raw"
+    WHEEL_DIAMETER = 0.127      # meters or inches depending on UNITS
+    WHEEL_TRACK = 0.356         # meters or inches units depending on UNITS
+    ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
+    GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
 
     VPID_P = 2 # Proportional
     VPID_I = 0 # Integral
@@ -392,9 +392,9 @@ class Serializer():
         spd = list()
         for v in vel:
             if self.units == 0:
-                revs_per_second = float(v) * 100 / (self.wheel_diameter * math.pi)
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi)
             elif self.units == 1:
-                revs_per_second = float(v) * 100 / (self.wheel_diameter * math.pi * 2.54)
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi * 2.54 / 100)
             ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
             spd.append(int(ticks_per_loop))
                                                     
@@ -537,6 +537,9 @@ class Serializer():
             return values[0]
         else:
             return values
+        
+    def get_analog(self, id):
+        return self.sensor(id)
     
     def get_all_analog(self):
         ''' Return the readings from all analog ports.
@@ -660,8 +663,8 @@ class Serializer():
         left_revs_per_second = float(left_ticks_per_loop) / self.encoder_resolution / self.loop_interval
         right_revs_per_second = float(right_ticks_per_loop) / self.encoder_resolution / self.loop_interval
         if self.units == 0:
-            left_m_s = left_revs_per_second * self.wheel_diameter * math.pi / 100
-            right_m_s = right_revs_per_second * self.wheel_diameter * math.pi / 100
+            left_m_s = left_revs_per_second * self.wheel_diameter * math.pi
+            right_m_s = right_revs_per_second * self.wheel_diameter * math.pi
         elif self.units == 1:
             left_m_s = left_revs_per_second * self.wheel_diameter * 2.54 * math.pi / 100
             right_m_s = right_revs_per_second * self.wheel_diameter * 2.54 * math.pi / 100
@@ -751,6 +754,76 @@ class Serializer():
         
     def get_encoder_resolution(self):
         return self.encoder_resolution
+    
+    def get_Ping(self, pin, cached=False):
+        ''' Get the distance reading from a Ping sonarl sensor on the given GPIO pin.
+        '''
+        if cached and self.digital_sensor_cache[pin] != None:
+            value = self.digital_sensor_cache[pin]
+        else:
+            value = self.pping(pin)
+        return value
+    
+    def get_GP2D12(self, pin, cached=False):
+        ''' Get the distance reading from a GP2D12 IR sensor on the given analog pin.
+        '''
+        if cached and self.analog_sensor_cache[pin] != None:
+            value = self.analog_sensor_cache[pin]
+        else:
+            value = self.sensor(pin)
+        try:
+            distance = (6787 / (value - 3)) - 4
+        except:
+            distance = 80
+        if distance > 80: distance = 80
+        if distance < 10: distance = 10   
+        if self.units == 0:
+            return distance
+        elif self.units == 1:
+            return distance / 2.54
+        else:
+            return value
+        
+    def get_PhidgetsTemperature(self, pin, cached=False, units="F"):
+        ''' Get the temperature from a Phidgets Temperature sensor on an analog sensor port and return
+            the reading in either Farhenheit or Celcius depending on the units argument.
+        '''
+        self.temp_units = units
+        if cached and self.analog_sensor_cache[pin] != None:
+            value = self.analog_sensor_cache[pin]
+        else:
+            value = self.sensor(pin)
+        tempC = (value - 200.) / 4.
+        if self.temp_units == "C":
+            return tempC
+        else:
+            return 9. * tempC / 5. + 32.
+        
+    def get_PhidgetsVoltage(self, pin, cached=False):
+        ''' Get the voltage from a Phidgets Voltage sensor on an analog sensor port.
+        '''
+        
+        if cached and self.analog_sensor_cache[pin] != None:
+            value = self.analog_sensor_cache[pin]
+        else:
+            value = self.sensor(pin)
+        return 0.06 * (value - 500.)
+    
+    def get_PhidgetsCurrent(self, pin, cached=False, model=20, ac_dc="dc"):
+        if cached and self.analog_sensor_cache[pin] != None:
+            value = self.analog_sensor_cache[pin]
+        else:
+            value = self.sensor(pin)
+        if model == 20:
+            if ac_dc == "dc":
+                return 0.05 * (value - 500.)
+            else:
+                return 0.025 * value
+        else:
+            if ac_dc == "dc":
+                return 0.125 * (value - 500.)
+            else:
+                return 0.625 * value        
          
     def travel_distance(self, dist, vel, vel_units="ticks"):
         ''' Move forward or backward 'dist' (inches or cm depending on units) at speed 'vel'.  Use negative distances
@@ -778,36 +851,6 @@ class Serializer():
         revs = rotation_dist / self.wheel_diameter
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, -ticks], [vel, vel])       
-
-
-class GP2D12():
-    def __init__(self, serializer, pin):
-        ''' Usage: myIR = GP2D12(serializer, pin)
-                   reading = myIR.value()
-                   reading = myIR.value(cached=True) # gets value from the cache
-            The Sharp GPD12 IR Sensor class wraps an analog sensor port and converts the raw
-            sensor reading to either inches or cm depending on the units settings.
-        '''
-        self.serializer = serializer
-        self.pin = pin
-
-    def value(self, cached=False):
-        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
-            value = self.serializer.analog_sensor_cache[self.pin]
-        else:
-            value = self.serializer.sensor(self.pin)
-        try:
-            distance = (6787 / (value - 3)) - 4
-        except:
-            distance = 80
-        if distance > 80: distance = 80
-        if distance < 10: distance = 10   
-        if self.serializer.units == 0:
-            return distance
-        elif self.serializer.units == 1:
-            return distance / 2.54
-        else:
-            return value
         
 
 class PhidgetsTemperature():
@@ -822,16 +865,8 @@ class PhidgetsTemperature():
         self.pin = pin
         self.temp_units = units
     
-    def value(self, cached=False):
-        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
-            value = self.serializer.analog_sensor_cache[self.pin]
-        else:
-            value = self.serializer.sensor(self.pin)
-        tempC = (value - 200.) / 4.
-        if self.temp_units == "C":
-            return tempC
-        else:
-            return 9. * tempC / 5. + 32.
+    def value(self, cached=False, units="F"):   
+        return self.serializer.get_PhidgetsTemperature(self.pin, cached, units)
     
 
 class PhidgetsVoltage():
@@ -846,12 +881,8 @@ class PhidgetsVoltage():
         self.pin = pin
     
     def value(self, cached=False):
-        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
-            value = self.serializer.analog_sensor_cache[self.pin]
-        else:
-            value = self.serializer.sensor(self.pin)
-        return 0.06 * (value - 500.)
-    
+        return self.serializer.get_PhidgetsVoltage(self.pin, cached)
+ 
 
 class PhidgetsCurrent():
     def __init__(self, serializer, pin, model=20, ac_dc="dc"):
@@ -869,20 +900,8 @@ class PhidgetsCurrent():
         self.ac_dc = ac_dc
         
     def value(self, cached=False):
-        if cached and self.serializer.analog_sensor_cache[self.pin] != None:
-            value = self.serializer.analog_sensor_cache[self.pin]
-        else:
-            value = self.serializer.sensor(self.pin)
-        if self.model == 20:
-            if self.ac_dc == "dc":
-                return 0.05 * (value - 500.)
-            else:
-                return 0.025 * value
-        else:
-            if self.ac_dc == "dc":
-                return 0.125 * (value - 500.)
-            else:
-                return 0.625 * value 
+        return self.serializer.get_PhidgetsCurrent(self.pin, cached, self.model, self.ac_dc)        
+
 
 class Ping():
     def __init__(self, serializer, pin):
@@ -896,19 +915,29 @@ class Ping():
         self.pin = pin
     
     def value(self, cached=False):   
-        if cached and self.serializer.digital_sensor_cache[self.pin] != None:
-            value = self.serializer.digital_sensor_cache[self.pin]
-        else:
-            value = self.serializer.pping(self.pin)
-        return value
+        return self.serializer.get_Ping(self.pin, cached)
     
+class GP2D12():
+    def __init__(self, serializer, pin):
+        ''' Usage: myIR = GP2D12(serializer, pin)
+                   reading = myIR.value()
+                   reading = myIR.value(cached=True) # gets value from the cache
+            The Sharp GPD12 IR Sensor class wraps an analog sensor port and converts the raw
+            sensor reading to either inches or cm depending on the units settings.
+        '''
+        self.serializer = serializer
+        self.pin = pin
+
+    def value(self, cached=False):   
+        return self.serializer.get_GP2D12(self.pin, cached)
+ 
 
 """ Basic test for connectivity """
 if __name__ == "__main__":
     import time
     if os.name == "posix":
-        portName = "/dev/ttyUSB0"
-        # portName = "/dev/rfcomm0" # For bluetooth on Linux
+        #portName = "/dev/ttyUSB0"
+        portName = "/dev/rfcomm0" # For bluetooth on Linux
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
@@ -924,14 +953,11 @@ if __name__ == "__main__":
     print "Baudrate", mySerializer.get_baud()
     print "VPID", mySerializer.get_vpid()
     print "DPID", mySerializer.get_dpid()
+    print "Voltage", mySerializer.voltage()
     
-#    mySerializer.mogo_m_per_s([1, 2], [0.2, 0.2])
-#    time.sleep(2)
-#    print mySerializer.vel_m_per_s()
-
-    mySerializer.travel_distance(12, 0.2, vel_units="meters")
-    
-    time.sleep(5)
+    mySerializer.mogo_m_per_s([1, 2], [0.5, 0.5])
+    time.sleep(2)
+    print mySerializer.vel_m_per_s()
     
     print "Connection test successful, now shutting down...",
     

@@ -52,8 +52,6 @@ myIR = Serializer.GP2D12(mySerializer, 4)
 myTemp = Serializer.PhidgetsTemperature(mySerializer, 0, "F")
 myAmps = Serializer.PhidgetsCurrent(mySerializer, 1, model=20, ac_dc="dc")
 
-
-
 print "Firmware Version", mySerializer.fw()
 print "Units", mySerializer.get_units()
 print "Baudrate", mySerializer.get_baud()
