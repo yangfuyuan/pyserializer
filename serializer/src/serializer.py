@@ -41,25 +41,41 @@ import math
 import os
 from serial.serialutil import SerialException
 
-class Serializer(): 
-    I2C_READ = 'r'
-    I2C_WRITE = 'w'
+class Serializer():  
+    ''' Configuration Parameters
+    '''
     N_ANALOG_PORTS = 6
     N_DIGITAL_PORTS = 12
-    WHEEL_DIAMETER = 5
-    WHEEL_TRACK = 14
+    UNITS = 1 # 1 is inches, 0 is cm and 2 is "raw"
+    WHEEL_DIAMETER = 5  # units depend on UNITS
+    WHEEL_TRACK = 14    # units depend on UNITS
     ENCODER_RESOLUTION = 624
-    GEAR_REDUCTION = 1
+    GEAR_REDUCTION = 2
 
-    def __init__(self, port="COM12", baudrate=19200, timeout=5): 
+    VPID_P = 2 # Proportional
+    VPID_I = 0 # Integral
+    VPID_D = 5 # Derivative                                                                               
+    VPID_L = 45 # Loop: this together with UNITS and WHEEL_DIAMETER determines real-world velocity
+    
+    DPID_P = 1 # Proportional
+    DPID_I = 0 # Integral
+    DPID_D = 0 # Derivative 
+    DPID_A = 5 # Acceleration
+    
+    MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID control.
+    LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
+    
+    def __init__(self, port="COM12", baudrate=19200, timeout=5, init_params=False): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.units = 1
+        self.units = self.UNITS
         self.wheel_diameter = self.WHEEL_DIAMETER
         self.wheel_track = self.WHEEL_TRACK
         self.encoder_resolution = self.ENCODER_RESOLUTION
         self.gear_reduction = self.GEAR_REDUCTION
+        self.loop_interval = self.LOOP_INTERVAL
+        self.init_params = init_params
         self.messageLock = threading.Lock()
         
         ''' An array to cache analog sensor readings'''
@@ -74,12 +90,18 @@ class Serializer():
             self.port = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.timeout)
             if self.get_baud() != self.baudrate:
                 raise SerialException
-            self.units = self.get_units()
             print "Connected at", self.baudrate, "baud."
+            if self.init_params:
+                self.init_parameters()
         except SerialException:
             print "Cannot connect to Serializer!"
             print "Make sure you are plugged in and turned on."
-            os._exit(1)           
+            os._exit(1)
+            
+    def init_parameters(self):
+        self.set_units(self.UNITS)
+        self.set_vpid(self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L)
+        self.set_dpid(self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A)
 
     def open(self): 
         ''' Open the serial port.
@@ -354,6 +376,22 @@ class Serializer():
         if type(id) == int: id = [id]
         if type(vel) == int: vel = [vel]          
         return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, vel))))
+    
+    def mogo_m_per_s(self, id, vel):
+        ''' Set the motor speeds in meters per second.
+        '''
+        if type(id) != list: id = [id]
+        if type(vel) != list: vel = [vel]
+        spd = list()
+        for v in vel:
+            if self.units == 0:
+                revs_per_second = float(v) * 100 / (self.wheel_diameter * math.pi)
+            elif self.units == 1:
+                revs_per_second = float(v) * 100 / (self.wheel_diameter * math.pi * 2.54)
+            ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+            spd.append(int(ticks_per_loop))
+                                                    
+        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd))))
 
     def stop(self):
         ''' Stop both motors.
@@ -603,9 +641,38 @@ class Serializer():
 
     def vel(self):
         ''' The vel command returns the left and right wheel velocities. The
-            velocity returned is based on the PIDL parameter configuration.
+            velocity returned is based on the PIDL parameter configuration.  The
+            units are encoder ticks per PID loop interval.
         '''
         return self.execute_array('vel')
+    
+    def vel_m_per_s(self):
+        ''' Return the left and right wheel velocities in meters per second.
+        '''
+        [left_ticks_per_loop, right_ticks_per_loop] = self.vel()
+        left_revs_per_second = float(left_ticks_per_loop) / self.encoder_resolution / self.loop_interval
+        right_revs_per_second = float(right_ticks_per_loop) / self.encoder_resolution / self.loop_interval
+        if self.units == 0:
+            left_m_s = left_revs_per_second * self.wheel_diameter * math.pi / 100
+            right_m_s = right_revs_per_second * self.wheel_diameter * math.pi / 100
+        elif self.units == 1:
+            left_m_s = left_revs_per_second * self.wheel_diameter * 2.54 * math.pi / 100
+            right_m_s = right_revs_per_second * self.wheel_diameter * 2.54 * math.pi / 100
+        return list([left_m_s, right_m_s])
+    
+    def vel_mph(self):
+        ''' Return the left and right wheel velocities in miles per hour.
+        '''
+        [left_m_s, right_m_s] = self.vel_m_per_s()
+        m_s_2_mph = 2.25
+        return list([left_m_s * m_s_2_mph, right_m_s * m_s_2_mph])
+    
+    def fps(self):
+        ''' Return the left and right wheel velocities in feet per second.
+        '''
+        [left_m_s, right_m_s] = self.vel_m_per_s()
+        m_s_2_fps = 3.2808
+        return list([left_m_s * m_s_2_fps, right_m_s * m_s_2_fps]) 
 
     def restore(self):
         ''' Restores the factory default settings, and resets the board. NOTE:
@@ -652,7 +719,6 @@ class Serializer():
                 return self.sensor(5) * 15. / 1024.
             except:
                 print "BAD VOLTAGE:", self.sensor(5)
-                os._exit(1)
                 pass
         
     def set_wheel_diameter(self, diameter):
@@ -679,10 +745,18 @@ class Serializer():
     def get_encoder_resolution(self):
         return self.encoder_resolution
          
-    def travel_distance(self, dist, vel):
-        ''' Move forward or backward 'dist' inches at speed 'vel'.  Use negative distances
+    def travel_distance(self, dist, vel, vel_units="ticks"):
+        ''' Move forward or backward 'dist' (inches or cm depending on units) at speed 'vel'.  Use negative distances
             to move backward.
         '''
+        if vel_units == "meters":
+            if self.units == 0:
+                revs_per_second = float(vel) * 100 / (self.WHEEL_DIAMETER * math.pi)
+            elif self.units == 1:
+                revs_per_second = float(vel) * 100 / (self.WHEEL_DIAMETER * math.pi * 2.54)
+            ticks_per_loop = revs_per_second * self.ENCODER_RESOLUTION * self.LOOP_INTERVAL
+            vel = (int(ticks_per_loop))
+            
         revs = dist / self.wheel_diameter
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
@@ -824,8 +898,7 @@ class Ping():
 
 """ Basic test for connectivity """
 if __name__ == "__main__":
-    import os
-    
+    import time
     if os.name == "posix":
         portName = "/dev/ttyUSB0"
         # portName = "/dev/rfcomm0" # For bluetooth on Linux
@@ -842,7 +915,18 @@ if __name__ == "__main__":
     print "Firmware Version", mySerializer.fw()
     print "Units", mySerializer.get_units()
     print "Baudrate", mySerializer.get_baud()
-    print "Shutting down...",
+    print "VPID", mySerializer.get_vpid()
+    print "DPID", mySerializer.get_dpid()
+    
+#    mySerializer.mogo_m_per_s([1, 2], [0.2, 0.2])
+#    time.sleep(2)
+#    print mySerializer.vel_m_per_s()
+
+    mySerializer.travel_distance(12, 0.2, vel_units="meters")
+    
+    time.sleep(5)
+    
+    print "Connection test successful, now shutting down...",
     
     mySerializer.stop()
     mySerializer.close()
