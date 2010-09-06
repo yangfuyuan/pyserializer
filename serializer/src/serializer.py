@@ -78,6 +78,13 @@ class Serializer():
         self.init_params = init_params
         self.messageLock = threading.Lock()
         
+        if self.units == 0:
+            self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi / 100.0))
+        elif self.units == 1:
+            self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi * 2.54 / 100.0))
+
+            
+        
         ''' An array to cache analog sensor readings'''
         self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
         
