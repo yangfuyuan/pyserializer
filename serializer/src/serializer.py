@@ -65,26 +65,19 @@ class Serializer():
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID control.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    def __init__(self, port="COM12", baudrate=19200, timeout=5, init_params=False): 
+    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.
+    
+    def __init__(self, port="COM12", baudrate=19200, timeout=5): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.units = self.UNITS
         self.wheel_diameter = self.WHEEL_DIAMETER
         self.wheel_track = self.WHEEL_TRACK
         self.encoder_resolution = self.ENCODER_RESOLUTION
         self.gear_reduction = self.GEAR_REDUCTION
         self.loop_interval = self.LOOP_INTERVAL
-        self.init_params = init_params
         self.messageLock = threading.Lock()
-        
-        if self.units == 0:
-            self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi / 100.0))
-        elif self.units == 1:
-            self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi * 2.54 / 100.0))
-
             
-        
         ''' An array to cache analog sensor readings'''
         self.analog_sensor_cache = [None] * self.N_ANALOG_PORTS
         
@@ -98,14 +91,22 @@ class Serializer():
             if self.get_baud() != self.baudrate:
                 raise SerialException
             print "Connected at", self.baudrate, "baud."
-            if self.init_params:
-                self.init_parameters()
+            if self.INIT_PID:
+                self.init_PID()
+            else:
+                self.units = self.get_units()
+            if self.units == 0:
+                self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi))
+            elif self.units == 1:
+                self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi * 2.54 / 100.0))
+
         except SerialException:
             print "Cannot connect to Serializer!"
             print "Make sure you are plugged in and turned on."
             os._exit(1)
             
-    def init_parameters(self):
+    def init_PID(self):
+        print "Updating Units and PID parameters."
         self.set_units(self.UNITS)
         self.set_vpid(self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L)
         self.set_dpid(self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A)
