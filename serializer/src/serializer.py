@@ -47,8 +47,8 @@ class Serializer():
     N_ANALOG_PORTS = 6
     N_DIGITAL_PORTS = 12
     UNITS = 0                   # 1 is inches, 0 is metric (cm for sensors, meters for wheels measurements) and 2 is "raw"
-    WHEEL_DIAMETER = 0.127      # meters or inches depending on UNITS
-    WHEEL_TRACK = 0.356         # meters or inches units depending on UNITS
+    WHEEL_DIAMETER = 0.127      # meters (5.0 inches) meters or inches depending on UNITS
+    WHEEL_TRACK = 0.325         # meters (12.8 inches) meters or inches units depending on UNITS
     ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
     GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
 
@@ -61,11 +61,12 @@ class Serializer():
     DPID_I = 0 # Integral
     DPID_D = 0 # Derivative 
     DPID_A = 5 # Acceleration
+    DPID_B = 2 # Dead band
     
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID control.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.
+    INIT_PID = True # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     def __init__(self, port="COM12", baudrate=19200, timeout=5): 
         self.port = port
@@ -75,7 +76,8 @@ class Serializer():
         self.wheel_track = self.WHEEL_TRACK
         self.encoder_resolution = self.ENCODER_RESOLUTION
         self.gear_reduction = self.GEAR_REDUCTION
-        self.loop_interval = self.LOOP_INTERVAL
+        self.loop_interval = None
+        self.ticks_per_meter = None
         self.messageLock = threading.Lock()
             
         ''' An array to cache analog sensor readings'''
@@ -91,14 +93,21 @@ class Serializer():
             if self.get_baud() != self.baudrate:
                 raise SerialException
             print "Connected at", self.baudrate, "baud."
+            
+            # Take care of the UNITS, VPID and DPID parameters for PID drive control.
             if self.INIT_PID:
                 self.init_PID()
             else:
                 self.units = self.get_units()
+                [self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L] = self.get_vpid()
+                [self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A, self.DPID_B] = self.get_dpid()
+                
             if self.units == 0:
                 self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi))
             elif self.units == 1:
                 self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi * 2.54 / 100.0))
+                    
+            self.loop_interval = self.VPID_L * self.MILLISECONDS_PER_PID_LOOP / 1000
 
         except SerialException:
             print "Cannot connect to Serializer!"
@@ -109,7 +118,7 @@ class Serializer():
         print "Updating Units and PID parameters."
         self.set_units(self.UNITS)
         self.set_vpid(self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L)
-        self.set_dpid(self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A)
+        self.set_dpid(self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A, self.DPID_B)
 
     def open(self): 
         ''' Open the serial port.
@@ -420,6 +429,7 @@ class Serializer():
             configuration section below.  By default the Serializer VPID
             parameters are configured to work with our Traxster Robot Kit
         '''
+        [self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L] = [prop, integ, deriv, loop]
         return self.execute_ack('vpid %d:%d:%d:%d' %(prop, integ, deriv, loop))
     
     def digo(self, id, dist, vel):
@@ -442,14 +452,15 @@ class Serializer():
         dpid = self.execute('dpid')
         return map(lambda x: int(x.split(':')[1]), dpid.split())
 
-    def set_dpid(self, prop, integ, deriv, accel):
+    def set_dpid(self, prop, integ, deriv, accel, dead_band):
         ''' The set_dpid command gets/sets the PIDA (Proportional, Integral,
             Derivative, and Acceleration) parameters for the distance PID control
             on the SerializerTM. If the PIDA parameters are absent, the PIDA
             values are returned. Otherwise the PIDA parameters are parsed, and
             saved (in eeprom).  
         '''
-        return self.execute_ack('dpid %d:%d:%d:%d' %(prop, integ, deriv, accel))
+        [self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A, self.DPID_B] = [prop, integ, deriv, accel, dead_band]
+        return self.execute_ack('dpid %d:%d:%d:%d:%d' %(prop, integ, deriv, accel, dead_band))
      
     def set_rpid(self, r):
         ''' The rpid command sets the default PID params known to work with
@@ -826,31 +837,43 @@ class Serializer():
             else:
                 return 0.625 * value        
          
-    def travel_distance(self, dist, vel, vel_units="ticks"):
+    def travel_distance(self, dist, vel):
         ''' Move forward or backward 'dist' (inches or cm depending on units) at speed 'vel'.  Use negative distances
             to move backward.
         '''
-        if vel_units == "meters":
-            if self.units == 0:
-                revs_per_second = float(vel) * 100 / (self.WHEEL_DIAMETER * math.pi)
-            elif self.units == 1:
-                revs_per_second = float(vel) * 100 / (self.WHEEL_DIAMETER * math.pi * 2.54)
-            ticks_per_loop = revs_per_second * self.ENCODER_RESOLUTION * self.LOOP_INTERVAL
-            vel = (int(ticks_per_loop))
+
+        revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
+            
+        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+        vel = (int(ticks_per_loop))
             
         revs = dist / self.wheel_diameter
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
     def rotate(self, angle, vel):
-        ''' Rotate the robot through 'angle' degrees at speed 'vel'.  Use negative angles to rotate
+        ''' Rotate the robot through 'angle' degrees or radians at speed 'vel'.  Use negative angles to rotate
             in the other direction.
         '''
+        revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
+        
+        if self.units == 0:
+            rotation_fraction = angle / (2.0 * math.pi)
+        elif self.units == 1:
+            revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
+            rotation_fraction = angle / 360.
+            
+        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+        vel = (int(ticks_per_loop))
+        
+        print "Wheel Track", self.wheel_track
         full_rotation_dist = self.wheel_track * math.pi
-        rotation_fraction = angle / 360.
+        print "DIST", full_rotation_dist
         rotation_dist = rotation_fraction * full_rotation_dist
-        revs = rotation_dist / self.wheel_diameter
-        ticks = revs * self.encoder_resolution / self.gear_reduction
+        print "WHEEL DIAM", self.wheel_diameter
+        revs = rotation_dist / (self.wheel_diameter * math.pi)
+        print "REVS", revs
+        ticks = revs * self.encoder_resolution  * self.gear_reduction
         self.digo([1, 2], [ticks, -ticks], [vel, vel])       
         
 
@@ -956,9 +979,18 @@ if __name__ == "__main__":
     print "DPID", mySerializer.get_dpid()
     print "Voltage", mySerializer.voltage()
     
-    mySerializer.mogo_m_per_s([1, 2], [0.5, 0.5])
-    time.sleep(2)
-    print mySerializer.vel_m_per_s()
+    mySerializer.rotate(math.pi * 2, 0.5)
+    while mySerializer.get_pids():
+        time.sleep(0.1)
+        
+#    mySerializer.travel_distance(24, 12)
+#    time.sleep(0.1)
+#    while mySerializer.get_pids():
+#        time.sleep(0.1)
+
+#    mySerializer.mogo_m_per_s([1, 2], [0.2, 0.2])
+#    time.sleep(3)
+#    print mySerializer.vel_m_per_s()
     
     print "Connection test successful, now shutting down...",
     
