@@ -32,7 +32,6 @@
     mySerializer.close()
     
     See the example files for more details.
-
 """
 
 import serial
@@ -43,7 +42,7 @@ from serial.serialutil import SerialException
 
 class Serializer():  
     ''' Configuration Parameters
-    '''
+    '''    
     N_ANALOG_PORTS = 6
     N_DIGITAL_PORTS = 12
     UNITS = 0                   # 1 is inches, 0 is metric (cm for sensors, meters for wheels measurements) and 2 is "raw"
@@ -979,9 +978,9 @@ if __name__ == "__main__":
     print "DPID", mySerializer.get_dpid()
     print "Voltage", mySerializer.voltage()
     
-    mySerializer.rotate(math.pi * 2, 0.5)
-    while mySerializer.get_pids():
-        time.sleep(0.1)
+#    mySerializer.rotate(math.pi * 2, 0.5)
+#    while mySerializer.get_pids():
+#        time.sleep(0.1)
         
 #    mySerializer.travel_distance(24, 12)
 #    time.sleep(0.1)
