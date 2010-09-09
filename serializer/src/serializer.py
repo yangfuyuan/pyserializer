@@ -65,7 +65,7 @@ class Serializer():
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    INIT_PID = True # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
+    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     def __init__(self, port="COM12", baudrate=19200, timeout=5): 
         self.port = port
@@ -739,7 +739,6 @@ class Serializer():
             try:
                 return self.sensor(5) * 15. / 1024.
             except:
-                print "BAD VOLTAGE:", self.sensor(5)
                 pass
         
     def set_wheel_diameter(self, diameter):
@@ -837,7 +836,7 @@ class Serializer():
                 return 0.625 * value        
          
     def travel_distance(self, dist, vel):
-        ''' Move forward or backward 'dist' (inches or cm depending on units) at speed 'vel'.  Use negative distances
+        ''' Move forward or backward 'dist' (inches or meters depending on units) at speed 'vel'.  Use negative distances
             to move backward.
         '''
 
@@ -865,13 +864,9 @@ class Serializer():
         ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
         vel = (int(ticks_per_loop))
         
-        print "Wheel Track", self.wheel_track
         full_rotation_dist = self.wheel_track * math.pi
-        print "DIST", full_rotation_dist
         rotation_dist = rotation_fraction * full_rotation_dist
-        print "WHEEL DIAM", self.wheel_diameter
         revs = rotation_dist / (self.wheel_diameter * math.pi)
-        print "REVS", revs
         ticks = revs * self.encoder_resolution  * self.gear_reduction
         self.digo([1, 2], [ticks, -ticks], [vel, vel])       
         
