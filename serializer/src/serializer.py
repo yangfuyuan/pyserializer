@@ -60,12 +60,12 @@ class Serializer():
     DPID_I = 0 # Integral
     DPID_D = 0 # Derivative 
     DPID_A = 5 # Acceleration
-    DPID_B = 2 # Dead band
+    DPID_B = 5 # Dead band
     
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
+    INIT_PID = True # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     def __init__(self, port="COM12", baudrate=19200, timeout=5): 
         self.port = port
@@ -849,6 +849,13 @@ class Serializer():
         ticks = revs * self.encoder_resolution / self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
+    def travel_at_speed(self, id, vel):
+        ''' Move forward or backward at speed 'vel' in meters per second.  Use negative speeds
+            to move backward.  This is just an alias for mogo_m_per_s so see that function for
+            more details.
+        '''
+        self.mogo_m_per_s(id, vel)
+        
     def rotate(self, angle, vel):
         ''' Rotate the robot through 'angle' degrees or radians at speed 'vel'.  Use negative angles to rotate
             in the other direction.
@@ -858,7 +865,6 @@ class Serializer():
         if self.units == 0:
             rotation_fraction = angle / (2.0 * math.pi)
         elif self.units == 1:
-            revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
             rotation_fraction = angle / 360.
             
         ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
@@ -868,8 +874,43 @@ class Serializer():
         rotation_dist = rotation_fraction * full_rotation_dist
         revs = rotation_dist / (self.wheel_diameter * math.pi)
         ticks = revs * self.encoder_resolution  * self.gear_reduction
-        self.digo([1, 2], [ticks, -ticks], [vel, vel])       
+        self.digo([1, 2], [ticks, -ticks], [vel, vel])
         
+    def rotate_at_speed(self, vel):
+        ''' Rotate the robot continously at speed 'vel' radians per second.  Use negative speed to rotate
+            in the other direction.
+        '''
+        revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
+            
+        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+        vel = (int(ticks_per_loop))
+        
+        self.mogo([1, 2], [vel, -vel])
+        
+    def twist(self, twist):
+        angle = math.atan2(twist.linear.y, twist.linear.x)
+        self.rotate(angle, twist.angular.z)
+        while self.get_pids():
+            time.sleep(0.05)
+        speed = math.sqrt(twist.linear.x * twist.linear.x + twist.linear.y * twist.linear.y)
+        self.mogo_m_per_s([1, 2], [speed, speed])
+    
+class Linear:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.z = 0
+        
+class Angular:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.z = 0
+        
+class Twist:
+    def __init__(self):
+        self.linear = Linear()
+        self.angular = Angular()      
 
 class PhidgetsTemperature():
     def __init__(self, serializer, pin, units="F"):
@@ -973,11 +1014,19 @@ if __name__ == "__main__":
     print "DPID", mySerializer.get_dpid()
     print "Voltage", mySerializer.voltage()
     
-#    mySerializer.rotate(math.pi * 2, 0.5)
+#    myTwist = Twist()
+#    myTwist.linear.x = 0.2
+#    myTwist.linear.y = 0.1
+#    myTwist.angular.z = 0.2
+#    mySerializer.twist(myTwist)
+#    
+#    time.sleep(3)
+    
+#    mySerializer.rotate(math.pi * 2, 0.2)
 #    while mySerializer.get_pids():
 #        time.sleep(0.1)
         
-#    mySerializer.travel_distance(24, 12)
+#    mySerializer.travel_distance(-0.5, 0.2)
 #    time.sleep(0.1)
 #    while mySerializer.get_pids():
 #        time.sleep(0.1)
@@ -985,6 +1034,10 @@ if __name__ == "__main__":
 #    mySerializer.mogo_m_per_s([1, 2], [0.2, 0.2])
 #    time.sleep(3)
 #    print mySerializer.vel_m_per_s()
+
+#    mySerializer.rotate_at_speed(-0.2)
+#    time.sleep(3)
+#    mySerializer.stop()
     
     print "Connection test successful, now shutting down...",
     
