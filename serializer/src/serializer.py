@@ -1019,8 +1019,8 @@ if __name__ == "__main__":
 #    myTwist.linear.y = 0.1
 #    myTwist.angular.z = 0.2
 #    mySerializer.twist(myTwist)
-#    
 #    time.sleep(3)
+#    mySerializer.stop()
     
 #    mySerializer.rotate(math.pi * 2, 0.2)
 #    while mySerializer.get_pids():
