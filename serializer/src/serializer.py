@@ -652,7 +652,7 @@ class Serializer():
         m_s_2_mph = 2.25
         return list([left_m_s * m_s_2_mph, right_m_s * m_s_2_mph])
     
-    def fps(self):
+    def vel_fps(self):
         ''' Return the left and right wheel velocities in feet per second.
         '''
         [left_m_s, right_m_s] = self.vel_m_per_s()
