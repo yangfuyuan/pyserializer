@@ -51,16 +51,16 @@ class Serializer():
     ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
     GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
 
-    VPID_P = 2 # Proportional
-    VPID_I = 0 # Integral
-    VPID_D = 5 # Derivative                                                                               
+    VPID_P = 2  # Proportional
+    VPID_I = 0  # Integral
+    VPID_D = 5  # Derivative                                                                               
     VPID_L = 45 # Loop: this together with UNITS and WHEEL_DIAMETER determines real-world velocity
     
-    DPID_P = 1 # Proportional
-    DPID_I = 0 # Integral
-    DPID_D = 0 # Derivative 
-    DPID_A = 5 # Acceleration
-    DPID_B = 5 # Dead band
+    DPID_P = 1  # Proportional
+    DPID_I = 0  # Integral
+    DPID_D = 0  # Derivative 
+    DPID_A = 5  # Acceleration
+    DPID_B = 5  # Dead band
     
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
@@ -372,42 +372,6 @@ class Serializer():
             maxsonar trigger pin is RX, and the echo pin is PW.
         '''
         return self.execute_int('maxez1 %d %d' %(triggerPin, outputPin))
-   
-    def mogo(self, id, vel):
-        ''' Usage 1: mogo(id, vel)
-            Usage 2: mogo([id1, id2], [vel1, vel2])
-            The mogo command sets motor speed using one or more complex
-            parameters containing a <motorId:spd> value pair.
-            The motorId can be either 1 or 2, which corresponds to the Motor
-            Terminal port.
-            The vel value specifies the motor velocity, and it's range depends on
-            your VPID settings. See the VPID parameters section below to
-            determine your MAX velocity. A positive value rotates the motors in
-            one direction, which a negative value rotates the motors in the
-            opposite direction.
-            You will have to determine which direction is positive for your motors,
-            and connect the motors wires to the terminals on the Serializer board
-            in the appropriate configuration.
-        '''
-        if type(id) == int: id = [id]
-        if type(vel) == int: vel = [vel]          
-        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, vel))))
-    
-    def mogo_m_per_s(self, id, vel):
-        ''' Set the motor speeds in meters per second.
-        '''
-        if type(id) != list: id = [id]
-        if type(vel) != list: vel = [vel]
-        spd = list()
-        for v in vel:
-            if self.units == 0:
-                revs_per_second = float(v) / (self.wheel_diameter * math.pi)
-            elif self.units == 1:
-                revs_per_second = float(v) / (self.wheel_diameter * math.pi * 2.54 / 100)
-            ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
-            spd.append(int(ticks_per_loop))
-                                                    
-        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd))))
 
     def stop(self):
         ''' Stop both motors.
@@ -845,9 +809,45 @@ class Serializer():
         ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
         vel = (int(ticks_per_loop))
             
-        revs = dist / self.wheel_diameter
-        ticks = revs * self.encoder_resolution / self.gear_reduction
+        revs = dist / (self.wheel_diameter * math.pi)
+        ticks = revs * self.encoder_resolution * self.gear_reduction
         self.digo([1, 2], [ticks, ticks], [vel, vel])
+        
+    def mogo(self, id, vel):
+        ''' Usage 1: mogo(id, vel)
+            Usage 2: mogo([id1, id2], [vel1, vel2])
+            The mogo command sets motor speed using one or more complex
+            parameters containing a <motorId:spd> value pair.
+            The motorId can be either 1 or 2, which corresponds to the Motor
+            Terminal port.
+            The vel value specifies the motor velocity, and it's range depends on
+            your VPID settings. See the VPID parameters section below to
+            determine your MAX velocity. A positive value rotates the motors in
+            one direction, which a negative value rotates the motors in the
+            opposite direction.
+            You will have to determine which direction is positive for your motors,
+            and connect the motors wires to the terminals on the Serializer board
+            in the appropriate configuration.
+        '''
+        if type(id) == int: id = [id]
+        if type(vel) == int: vel = [vel]          
+        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, vel))))
+    
+    def mogo_m_per_s(self, id, vel):
+        ''' Set the motor speeds in meters per second.
+        '''
+        if type(id) != list: id = [id]
+        if type(vel) != list: vel = [vel]
+        spd = list()
+        for v in vel:
+            if self.units == 0:
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi)
+            elif self.units == 1:
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi * 2.54 / 100)
+            ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
+            spd.append(int(ticks_per_loop))
+                                                    
+        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd))))
         
     def travel_at_speed(self, id, vel):
         ''' Move forward or backward at speed 'vel' in meters per second.  Use negative speeds
@@ -867,7 +867,7 @@ class Serializer():
         elif self.units == 1:
             rotation_fraction = angle / 360.
             
-        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
         vel = (int(ticks_per_loop))
         
         full_rotation_dist = self.wheel_track * math.pi
@@ -877,15 +877,29 @@ class Serializer():
         self.digo([1, 2], [ticks, -ticks], [vel, vel])
         
     def rotate_at_speed(self, vel):
-        ''' Rotate the robot continously at speed 'vel' radians per second.  Use negative speed to rotate
+        ''' Rotate the robot continously at speed 'vel' radians or degrees per second.  Use negative speed to rotate
             in the other direction.
         '''
-        revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
             
-        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
-        vel = (int(ticks_per_loop))
+        if self.units == 1:
+            vel = vel / 180. * math.pi
+            
+        # Check that the user does not mistaken degrees for radians.
+        if vel > 1.0:
+            print "That is a rather high rotation rate. Are you sure you specified rotation velocity in the correct units?"
+            print "Degrees per second for English units and radians per second for metric."
+            print "Keep in mind that 1 radian per second is about 60 degrees per second."
+            os._exit(1)
+            
+        if self.units == 1:
+            full_rotation_dist = self.wheel_track * 2.54 / 100 * math.pi
+        else:
+            full_rotation_dist = self.wheel_track * math.pi
+            
+        revs_per_second = float(vel) / (2.0 * math.pi)
+        vel = revs_per_second * full_rotation_dist
         
-        self.mogo([1, 2], [vel, -vel])
+        self.mogo_m_per_s([1, 2], [vel, -vel])
         
     def twist(self, twist):
         angle = math.atan2(twist.linear.y, twist.linear.x)
