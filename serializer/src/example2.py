@@ -21,11 +21,13 @@
 """
 
 import serializer as Serializer
-import time, os
+import time
+import os
+import math
     
 if os.name == "posix":
     portName = "/dev/ttyUSB0" # Change this to your main Serializer port!
-    # portName = "/dev/rfcomm0" # For bluetooth on Linux
+    #portName = "/dev/rfcomm0" # For bluetooth on Linux
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
@@ -42,25 +44,24 @@ print "Units", mySerializer.get_units()
 """ * * * * *
     Caution!  Uncomment the following functions ONLY when you know your
     robot is ready to move safely!  You should also set the vpid, dpid, wheel diameter,
-    wheel track and gear_reduction to match your robot.  (Default units are inches.)
+    wheel track and gear_reduction to match your robot.  (Default units are meters and radians.)
 """
 
-#mySerializer.set_vpid(2, 0, 5, 5)
-#mySerializer.set_dpid(1, 0, 0, 5)
-#mySerializer.set_wheel_diameter(5) # Wheel diameter = 5 inches
-#mySerializer.set_wheel_track(14)   # Wheel track = 14 inches
-#mySerializer.set_gear_reduction(2) # 2:1 gear ratio
+#mySerializer.set_units(0) # Set units to metric.
+#mySerializer.set_vpid(2, 0, 5, 45)
+#mySerializer.set_dpid(1, 0, 0, 5, 5)
+#mySerializer.set_wheel_diameter(0.127) # Wheel diameter in meters
+#mySerializer.set_wheel_track(0.325)    # Wheel track in meters
+#mySerializer.set_gear_reduction(2)     # 2:1 gear ratio
 #
-#mySerializer.travel_distance(5, 3) # Travel 5 inches forward at speed 3. 
-#while mySerializer.get_pids():
-#    print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
+#mySerializer.travel_distance(0.3, 0.2) # Travel 30 cm forward at 0.2 meters per second.
+#while mySerializer.get_pids():         # Test for completion of the movement.
+#    print "Wheel velocities", mySerializer.vel_m_per_s(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
 #    time.sleep(0.1)
 #
-#mySerializer.rotate(90, 3) # Rotate 90 degrees at speed 3.
+#mySerializer.rotate(math.pi / 2, 0.3) # Rotate 90 degrees at speed 0.3 radians per second.
 #while mySerializer.get_pids():
-#    print "Wheel velocities", mySerializer.vel(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
-
-""" * * * * * """
+#    print "Wheel velocities", mySerializer.vel_m_per_s(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
     
 mySerializer.stop()
 mySerializer.close()

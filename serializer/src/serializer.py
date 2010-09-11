@@ -65,9 +65,9 @@ class Serializer():
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    INIT_PID = True # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
+    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
-    def __init__(self, port="COM12", baudrate=19200, timeout=5): 
+    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=5): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -1000,7 +1000,7 @@ if __name__ == "__main__":
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
-        portName = "COM12"
+        portName = "COM12" # Windows style COM port.
         
     baudRate = 19200
   
@@ -1013,31 +1013,6 @@ if __name__ == "__main__":
     print "VPID", mySerializer.get_vpid()
     print "DPID", mySerializer.get_dpid()
     print "Voltage", mySerializer.voltage()
-    
-#    myTwist = Twist()
-#    myTwist.linear.x = 0.2
-#    myTwist.linear.y = 0.1
-#    myTwist.angular.z = 0.2
-#    mySerializer.twist(myTwist)
-#    time.sleep(3)
-#    mySerializer.stop()
-    
-#    mySerializer.rotate(math.pi * 2, 0.2)
-#    while mySerializer.get_pids():
-#        time.sleep(0.1)
-        
-#    mySerializer.travel_distance(-0.5, 0.2)
-#    time.sleep(0.1)
-#    while mySerializer.get_pids():
-#        time.sleep(0.1)
-
-#    mySerializer.mogo_m_per_s([1, 2], [0.2, 0.2])
-#    time.sleep(3)
-#    print mySerializer.vel_m_per_s()
-
-#    mySerializer.rotate_at_speed(-0.2)
-#    time.sleep(3)
-#    mySerializer.stop()
     
     print "Connection test successful, now shutting down...",
     
