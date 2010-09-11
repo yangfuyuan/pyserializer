@@ -995,8 +995,8 @@ class GP2D12():
 if __name__ == "__main__":
     import time
     if os.name == "posix":
-        #portName = "/dev/ttyUSB0"
-        portName = "/dev/rfcomm0" # For bluetooth on Linux
+        portName = "/dev/ttyUSB0"
+        #portName = "/dev/rfcomm0" # For bluetooth on Linux
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
