@@ -25,7 +25,7 @@ import threading, time, os
 
 if os.name == "posix":
     portName = "/dev/ttyUSB0" # Change this to your main Serializer port!
-    # portName = "/dev/rfcomm0" # For bluetooth on Linux
+    #portName = "/dev/rfcomm0" # For bluetooth on Linux
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
@@ -67,13 +67,13 @@ class Thread2(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.finished = threading.Event()
-        self.interval = 0.5  # Access the voltage 2 times per second.
+        self.interval = 0.05  # Access the voltage 2 times per second.
         self.daemon = False
         self.count = 0
 
     def run(self):
         while not self.finished.isSet():
-            output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1))
+            output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1)) + " Sonar: " +  str(myPing.value())
             print output
             time.sleep(self.interval)
             
