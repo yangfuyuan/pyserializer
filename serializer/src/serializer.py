@@ -68,6 +68,7 @@ class Serializer():
     INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=5): 
+        print "HELLO!!!!!!!!!!"
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -173,50 +174,50 @@ class Serializer():
     def execute(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning a single value.
         '''
-        with self.messageLock:
-            try:
-                self.port.flushInput()
-            except:
-                pass
-            self.port.write(cmd + '\r')
-            return (self.port.readline(eol='>')[0:-3]).strip()
+        #with self.messageLock:
+        try:
+            self.port.flushInput()
+        except:
+            pass
+        self.port.write(cmd + '\r')
+        return (self.port.readline(eol='>')[0:-3]).strip()
 
     def execute_array(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an array.
         '''
-        with self.messageLock:
-            try:
-                self.port.flushInput()
-            except:
-                pass
-            self.port.write(cmd + '\r')
-            try:
-                return map(int, self.recv().split())
-            except:
-                return []
+        #with self.messageLock:
+        try:
+            self.port.flushInput()
+        except:
+            pass
+        self.port.write(cmd + '\r')
+        try:
+            return map(int, self.recv().split())
+        except:
+            return []
         
     def execute_ack(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning True if response is ACK.
         '''
-        with self.messageLock:
-            try:
-                self.port.flushInput()
-            except:
-                pass
-            self.port.write(cmd + '\r')
-            ack = self.recv()
-            return ack == 'ACK'
+        #with self.messageLock:
+        try:
+            self.port.flushInput()
+        except:
+            pass
+        self.port.write(cmd + '\r')
+        ack = self.recv()
+        return ack == 'ACK'
         
     def execute_int(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an int.
         '''
-        with self.messageLock:
-            try:
-                self.port.flushInput()
-            except:
-                pass
-            self.port.write(cmd + '\r')
-            return self.recv_int()
+        #with self.messageLock:
+        try:
+            self.port.flushInput()
+        except:
+            pass
+        self.port.write(cmd + '\r')
+        return self.recv_int()
 
     def fw(self):
         ''' The fw command returns the current firmware version.
