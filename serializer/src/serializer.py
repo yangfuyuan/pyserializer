@@ -68,7 +68,6 @@ class Serializer():
     INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=5): 
-        print "HELLO!!!!!!!!!!"
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -1010,8 +1009,8 @@ class GP2D12():
 if __name__ == "__main__":
     import time
     if os.name == "posix":
-        #portName = "/dev/ttyUSB0"
-        portName = "/dev/rfcomm0" # For bluetooth on Linux
+        portName = "/dev/ttyUSB0"
+        #portName = "/dev/rfcomm0" # For bluetooth on Linux
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
