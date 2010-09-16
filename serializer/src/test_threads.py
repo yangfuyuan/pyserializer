@@ -60,7 +60,7 @@ class Thread1(threading.Thread):
             output = "Thread 1 IR: " + str(round(myIR.value(), 1))
             delay = (datetime.now() - start).microseconds / 1000
             output = "Thread 1:", delay
-            print output
+            #print output
             if delay > max_delay:
                 max_delay = delay
                 print "MAX:", max_delay
@@ -81,12 +81,17 @@ class Thread2(threading.Thread):
         self.count = 0
 
     def run(self):
+        max_delay = 0
         while not self.finished.isSet():
             start = datetime.now()
             #output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1)) + " Sonar: " +  str(myPing.value())
             #output = "Thread 2:", (datetime.now() - start).microseconds / 1000
             output = "Thread 2:", mySerializer.mogo_m_per_s([1, 2], [random.randrange(-1, 2), random.randrange(-1, 2)])
-            print output
+            delay = (datetime.now() - start).microseconds / 1000
+            #print output
+            if delay > max_delay:
+                max_delay = delay
+                print "MAX:", max_delay
             time.sleep(self.interval)
             
     def stop(self):
@@ -98,12 +103,12 @@ class Thread2(threading.Thread):
 thread1 = Thread1()
 thread2 = Thread2()
 
-thread1.start()
+#thread1.start()
 thread2.start()
 
 time.sleep(30)
 
-thread1.stop()
+#thread1.stop()
 thread2.stop()
 
 mySerializer.stop()
