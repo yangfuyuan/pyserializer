@@ -30,7 +30,7 @@ if os.name == "posix":
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
-    portName = "COM12" # Change this to your main Serializer port!
+    portName = "COM21" # Change this to your main Serializer port!
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
@@ -48,7 +48,7 @@ class Thread1(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.finished = threading.Event()
-        self.interval = 0.3 # Access the sensors 20 times per second.
+        self.interval = 0.05 # Access the sensors 20 times per second.
         self.daemon = False
         self.count = 0
 
@@ -59,10 +59,10 @@ class Thread1(threading.Thread):
             output = "Thread 1 IR: " + str(round(myIR.value(), 1))
             delay = (datetime.now() - start).microseconds / 1000
             output = "Thread 1:", delay
-            #print output
+            print output
             if delay > max_delay:
                 max_delay = delay
-                print max_delay
+                print "MAX:", max_delay
             time.sleep(self.interval)
             
     def stop(self):
@@ -75,7 +75,7 @@ class Thread2(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.finished = threading.Event()
-        self.interval = 0.5  # Access the voltage 2 times per second.
+        self.interval = 0.05  # Access the voltage 2 times per second.
         self.daemon = False
         self.count = 0
 
@@ -84,7 +84,7 @@ class Thread2(threading.Thread):
             start = datetime.now()
             output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1)) + " Sonar: " +  str(myPing.value())
             output = "Thread 2:", (datetime.now() - start).microseconds / 1000
-            #print output
+            print output
             time.sleep(self.interval)
             
     def stop(self):
@@ -97,12 +97,12 @@ thread1 = Thread1()
 thread2 = Thread2()
 
 thread1.start()
-#thread2.start()
+thread2.start()
 
 time.sleep(30)
 
 thread1.stop()
-#thread2.stop()
+thread2.stop()
 
 mySerializer.stop()
 mySerializer.close()

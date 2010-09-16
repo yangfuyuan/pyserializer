@@ -29,7 +29,7 @@ if os.name == "posix":
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
-    portName = "COM12" # Change this to your main Serializer port!
+    portName = "COM21" # Change this to your main Serializer port!
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
