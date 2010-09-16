@@ -23,6 +23,7 @@
 import serializer as Serializer
 import threading, time, os
 from datetime import datetime
+import random
 
 if os.name == "posix":
     portName = "/dev/ttyUSB0" # Change this to your main Serializer port!
@@ -82,8 +83,9 @@ class Thread2(threading.Thread):
     def run(self):
         while not self.finished.isSet():
             start = datetime.now()
-            output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1)) + " Sonar: " +  str(myPing.value())
-            output = "Thread 2:", (datetime.now() - start).microseconds / 1000
+            #output = "Thread 2 Voltage: " + str(round(mySerializer.voltage(), 1)) + " Sonar: " +  str(myPing.value())
+            #output = "Thread 2:", (datetime.now() - start).microseconds / 1000
+            output = "Thread 2:", mySerializer.mogo_m_per_s([1, 2], [random.randrange(-1, 2), random.randrange(-1, 2)])
             print output
             time.sleep(self.interval)
             
