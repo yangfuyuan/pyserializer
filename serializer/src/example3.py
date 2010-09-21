@@ -33,7 +33,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=5)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=0.5)
 mySerializer.connect()
 
 """ The following sensors were attached to the corresponding pins for this example.
@@ -93,6 +93,8 @@ for i in range(50):
     deltaT = time.time() - start
     time.sleep(max(0, (0.1 - deltaT))) # 10Hz
     print "Time:", round(time.time() - start, 3), "Sonar:", sonar, "IR:", round(ir, 1), "Volts:", round(volts, 2), "Amps:", round(amps, 2)
+
+print "\nTesting completed, shutting down."
 
 mySerializer.stop()
 mySerializer.close()

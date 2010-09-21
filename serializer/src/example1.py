@@ -34,7 +34,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=5)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=0.5)
 mySerializer.connect()
     
 print "Firmware Version", mySerializer.fw()
@@ -60,6 +60,8 @@ for i in range(10):
     print "Sharp IR reading from cache:", myIR.value(cached=True)
     time.sleep(0.05)
     
+print "\nTesting completed, shutting down."
+
 mySerializer.stop()
 mySerializer.close()
 

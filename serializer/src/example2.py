@@ -35,7 +35,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=5)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=0.5)
 mySerializer.connect()
 
 print "Firmware Version", mySerializer.fw()
@@ -49,20 +49,24 @@ print "Units", mySerializer.get_units()
 
 #mySerializer.set_units(0) # Set units to metric.
 #mySerializer.set_vpid(2, 0, 5, 45)
-#mySerializer.set_dpid(1, 0, 0, 5, 5)
-#mySerializer.set_wheel_diameter(0.127) # Wheel diameter in meters
-#mySerializer.set_wheel_track(0.325)    # Wheel track in meters
-#mySerializer.set_gear_reduction(2)     # 2:1 gear ratio
+#mySerializer.set_dpid(1, 0, 0, 5, 10)
+#mySerializer.set_wheel_diameter(0.132) # Wheel diameter in meters
+#mySerializer.set_wheel_track(0.3365)    # Wheel track in meters
+#mySerializer.set_gear_reduction(1.667)     # 2:1 gear ratio
 #
-#mySerializer.travel_distance(0.3, 0.2) # Travel 30 cm forward at 0.2 meters per second.
+#mySerializer.travel_distance(1, 0.2) # Travel 30 cm forward at 0.2 meters per second.
 #while mySerializer.get_pids():         # Test for completion of the movement.
-#    print "Wheel velocities", mySerializer.vel_m_per_s(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
 #    time.sleep(0.1)
-#
-#mySerializer.rotate(math.pi / 2, 0.3) # Rotate 90 degrees at speed 0.3 radians per second.
-#while mySerializer.get_pids():
 #    print "Wheel velocities", mySerializer.vel_m_per_s(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
-    
+#
+#
+#mySerializer.rotate(math.pi * 2, 0.2) # Rotate 90 degrees at speed 0.3 radians per second.
+#while mySerializer.get_pids():
+#    time.sleep(0.1)
+#    print "Wheel velocities", mySerializer.vel_m_per_s(), "Encoder counts:", mySerializer.get_encoder_count([1, 2])
+
+print "\nTesting completed, shutting down."
+
 mySerializer.stop()
 mySerializer.close()
 

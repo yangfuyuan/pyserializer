@@ -20,7 +20,7 @@
         
     Basic Usage:
 
-    mySerializer = Serializer(port="COM12", baudrate=19200, timeout=0.05)
+    mySerializer = Serializer(port="COM12", baudrate=19200, timeout=5)
     mySerializer.connect()
     myPing = Ping(mySerializer, 4)  
     myIR = GP2D12(mySerializer, 4)
@@ -38,8 +38,6 @@ import serial
 import threading
 import math
 import os
-import time
-import sys
 from serial.serialutil import SerialException
 
 class Serializer():  
@@ -48,33 +46,28 @@ class Serializer():
     N_ANALOG_PORTS = 6
     N_DIGITAL_PORTS = 12
     UNITS = 0                   # 1 is inches, 0 is metric (cm for sensors, meters for wheels measurements) and 2 is "raw"
-    WHEEL_DIAMETER = 0.132      # meters (5.0 inches) meters or inches depending on UNITS
+    WHEEL_DIAMETER = 0.127      # meters (5.0 inches) meters or inches depending on UNITS
     WHEEL_TRACK = 0.325         # meters (12.8 inches) meters or inches units depending on UNITS
     ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
     GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
-    
-    ENCODER_TYPE = 1            # 1 = quadrature, 0 = single
-    MOTORS_REVERSED = False      # Multiplies encoder counts by -1 if the motor rotation direction is reversed.
 
-    VPID_P = 2   # Proportional
-    VPID_I = 0   # Integral
-    VPID_D = 5   # Derivative                                                                               
-    VPID_L = 45  # Loop: this together with UNITS and WHEEL_DIAMETER determines real-world velocity
+    VPID_P = 2  # Proportional
+    VPID_I = 0  # Integral
+    VPID_D = 5  # Derivative                                                                               
+    VPID_L = 45 # Loop: this together with UNITS and WHEEL_DIAMETER determines real-world velocity
     
-    DPID_P = 1   # Proportional
-    DPID_I = 0   # Integral
-    DPID_D = 0   # Derivative 
-    DPID_A = 5   # Acceleration
-    DPID_B = 10  # Dead band
+    DPID_P = 1  # Proportional
+    DPID_I = 0  # Integral
+    DPID_D = 0  # Derivative 
+    DPID_A = 5  # Acceleration
+    DPID_B = 5  # Dead band
     
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
     INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
-    BAD_VALUE = -999
-    
-    def __init__(self, port="/dev/ttyUSB0", baudrate=57600, timeout=0.5): 
+    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=5): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -96,13 +89,10 @@ class Serializer():
         try:
             print "Connecting to Serializer on port", self.port, "..."
             self.port = serial.Serial(port=self.port, baudrate=self.baudrate, timeout=self.timeout, writeTimeout=self.timeout)
-            time.sleep(1)
-            self.port.write('cfg baud\r')
-            test = (self.port.readline(eol='>')[0:-3]).strip()
-            if test != str(self.baudrate):       
+            if self.get_baud() != self.baudrate:
                 raise SerialException
             print "Connected at", self.baudrate, "baud."
-
+            
             # Take care of the UNITS, VPID and DPID parameters for PID drive control.
             if self.INIT_PID:
                 self.init_PID()
@@ -112,9 +102,9 @@ class Serializer():
                 [self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A, self.DPID_B] = self.get_dpid()
                 
             if self.units == 0:
-                self.ticks_per_meter = int(self.encoder_resolution * self.gear_reduction  / (self.wheel_diameter * math.pi))
+                self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi))
             elif self.units == 1:
-                self.ticks_per_meter = int(self.encoder_resolution * self.gear_reduction / (self.wheel_diameter * math.pi * 2.54 / 100.0))
+                self.ticks_per_meter = int(self.encoder_resolution / (self.wheel_diameter * math.pi * 2.54 / 100.0))
                     
             self.loop_interval = self.VPID_L * self.MILLISECONDS_PER_PID_LOOP / 1000
 
@@ -125,7 +115,6 @@ class Serializer():
             
     def init_PID(self):
         print "Updating Units and PID parameters."
-        self.set_encoder(self.ENCODER_TYPE)
         self.set_units(self.UNITS)
         self.set_vpid(self.VPID_P, self.VPID_I, self.VPID_D, self.VPID_L)
         self.set_dpid(self.DPID_P, self.DPID_I, self.DPID_D, self.DPID_A, self.DPID_B)
@@ -135,6 +124,7 @@ class Serializer():
         '''
         with self.messageLock:
             self.port.open()
+            print self.recv()
 
     def close(self): 
         ''' Close the serial port.
@@ -149,11 +139,10 @@ class Serializer():
         self.port.write(cmd + '\r')
 
     def recv(self):
-        ''' This command should not be used on its own: it is called by the execute commands   
+        ''' This command should not be used on its own: it is called by the execute commands
             below in a thread safe manner.
         '''
-        value = (self.port.readline(eol='>')[0:-3]).strip()
-        return value
+        return (self.port.readline(eol='>')[0:-3]).strip()
             
     def recv_ack(self):
         ''' This command should not be used on its own: it is called by the execute commands
@@ -166,20 +155,20 @@ class Serializer():
         ''' This command should not be used on its own: it is called by the execute commands
             below in a thread safe manner.
         '''
-        value = self.recv()
-        return int(value)
+        msg = self.recv()
+        try:
+            return int(msg)
+        except:
+            return msg
 
     def recv_array(self):
         ''' This command should not be used on its own: it is called by the execute commands
             below in a thread safe manner.
         '''
         try:
-            values = self.recv().split()
-            return map(int, values)
+            return map(int, self.recv().split())
         except:
-#            print "execute exception when doing a recv_array"
-#            print sys.exc_info() 
-            return None
+            return []
 
     def execute(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning a single value.
@@ -187,22 +176,10 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
                 pass
-            try:
-                self.port.write(cmd + '\r')
-                value = self.recv()
-                while value == '' or value == 'NACK':
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    value = self.recv()
-            except:
-#                print "execute exception when executing", cmd
-#                print sys.exc_info()
-                return None
-        return value
+            self.port.write(cmd + '\r')
+            return (self.port.readline(eol='>')[0:-3]).strip()
 
     def execute_array(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an array.
@@ -210,26 +187,13 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
-                print "Can't flush array!"
+                pass
+            self.port.write(cmd + '\r')
             try:
-                self.port.write(cmd + '\r')
-                values = self.recv_array()
-                while values == '' or values == 'NACK' or values == []:
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    values = self.recv_array()
+                return map(int, self.recv().split())
             except:
                 return []
-#                print "execute_array exception when executing", cmd
-#                print sys.exc_info()
-#                return None
-        try:
-            return map(int, values)
-        except:
-            return []
         
     def execute_ack(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning True if response is ACK.
@@ -237,22 +201,11 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
                 pass
-            try:
-                self.port.write(cmd + '\r')
-                ack = self.recv()
-                while ack == '' or ack == 'NACK':
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    ack = self.recv()
-            except:
-                print "execute_ack exception when executing", cmd
-                print sys.exc_info()
-                return 0
-        return ack == 'ACK'
+            self.port.write(cmd + '\r')
+            ack = self.recv()
+            return ack == 'ACK'
         
     def execute_int(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an int.
@@ -260,32 +213,10 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
                 pass
-            try:
-                self.port.write(cmd + '\r')
-                value = self.recv()
-                while value == '' or value == 'NACK':
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    value = self.recv()
-            except:
-                print "execute_int exception when executing", cmd
-                print sys.exc_info()
-                return None
-        return int(value)
-                
-    def update_digital_cache(self, id, value):
-        with self.messageLock:
-            if value != "NACK":
-                self.digital_sensor_cache[id] = value
-            
-    def update_analog_cache(self, id, value):
-        with self.messageLock:
-            if value != "NACK":
-                self.analog_sensor_cache[id] = value
+            self.port.write(cmd + '\r')
+            return self.recv_int()
 
     def fw(self):
         ''' The fw command returns the current firmware version.
@@ -365,7 +296,7 @@ class Serializer():
             raw mode.  In raw mode, srf04, srf05, pping, and maxez1 return
             reading in units of 0.4us. srf08 and srf10 return readings of 1us..
         '''
-        return self.execute_int('cfg units')
+        return int(self.execute('cfg units'))
 
     def set_units(self, units):
         ''' The set_units command sets the internal units used for sensor
@@ -373,9 +304,10 @@ class Serializer():
             raw mode.  In raw mode, srf04, srf05, pping, and maxez1 return
             reading in units of 0.4us. srf08 and srf10 return readings of 1us.
             The cfg units command without a parameter returns the value
+            currently stored in EEPROM.
         '''
         self.units = units
-        return self.execute_ack('cfg units %d' %units);
+        return self.execute_int('cfg units %d' %units);
 
     def get_encoder_count(self, id):
         ''' Usage 1: get_encoder_count(id)
@@ -385,17 +317,7 @@ class Serializer():
             counts for channel A are used for internal VPID and DPID algorithms.
         '''
         if type(id) == int: id=[id]
-        values = self.execute_array('getenc %s' %' '.join(map(str, id)))
-
-        #print "ENCODER IDS", id, "VALUES", values
-        if len(values) != len(id):
-            print "Encoder count did not match ID count for ids", id
-            print "Values", values
-        else:
-            if self.MOTORS_REVERSED:
-                for i in range(len(id)):
-                    values[i] = -1 * values[i]          
-        return values
+        return self.execute_array('getenc %s' %' '.join(map(str, id)))
 
     def clear_encoder(self, id):
         ''' Usage 1: clear_encoder(id)
@@ -418,7 +340,7 @@ class Serializer():
         values = self.execute_array('getio %s' %' '.join(map(str, id)))
         n = len(id)
         for i in range(n):
-            self.update_digital_cache(id[i], values[i])
+            self.digital_sensor_cache[id[i]] = values[i]
         if n == 1:
             return values[0]
         else:
@@ -454,7 +376,7 @@ class Serializer():
     def stop(self):
         ''' Stop both motors.
         '''
-        return self.execute_ack('stop')
+        return self.execute('stop')
 
     def get_vpid(self):
         ''' Get the PIDL parameter values.
@@ -570,7 +492,7 @@ class Serializer():
             command w a 0 speed, or simply sending a stop command.
         '''
         return self.execute_ack('sweep %d %d %d' %(id, speed, steps))
-            
+
     def sensor(self, id):
         ''' Usage 1: reading = sensor(id)
             Usage 2: readings = sensor([id1, id2, ..., idN])
@@ -581,25 +503,15 @@ class Serializer():
             battery voltage, simply multiply the value returned by Sensor 5 by 
             15/1028.
         '''
-        if type(id) == int: id = [id]
+        if type(id) == int: id=[id]
         values = self.execute_array('sensor %s' %' '.join(map(str, id)))
         n = len(values)
-        if n != len(id):
-            print "Array size incorrect: returning cached values for sensors", id
-            return self.analog_sensor_cache
-        try:
-            for i in range(n):
-                if values[i] == None:
-                    values[i] = self.BAD_VALUE
-            for i in range(n):
-                self.update_analog_cache(id[i], values[i])
-            if n == 1:
-                return values[0]
-            else:
-                return values
-        except:
-            print "Exception reading analog sensors: returning cached values for sensors", id
-            return self.analog_sensor_cache
+        for i in range(n):
+            self.analog_sensor_cache[id[i]] = values[i]
+        if n == 1:
+            return values[0]
+        else:
+            return values
         
     def get_analog(self, id):
         return self.sensor(id)
@@ -673,7 +585,7 @@ class Serializer():
             range). Sonar distance resolution is integer based.
         '''
         value = self.execute_int('pping %d' %pinId);
-        self.update_digital_cache(pinId, value)
+        self.digital_sensor_cache[pinId] = value
         return value
 
     def srf08(self, i2c_addr=None):
@@ -710,7 +622,7 @@ class Serializer():
             The tpa81 command queries a Devantech TPA81 thermopile sensor for
             temperature values. It returns 8 temperature values.
         '''
-        return self.execute_array('tpa81 0x%X' %i2caddr if i2caddr else 'tpa81')
+        return self.execute('tpa81 0x%X' %i2caddr if i2caddr else 'tpa81')
 
     def vel(self):
         ''' The vel command returns the left and right wheel velocities. The
@@ -785,21 +697,13 @@ class Serializer():
             return self.execute_array(cmd)
         
     def voltage(self, cached=False):
-        if cached:
-            try:
-                value = self.analog_sensor_cache[5] * 15. / 1024.
-            except:
-                try:
-                    value = self.sensor(5) * 15. / 1024.
-                    self.update_analog_cache(5, value)
-                except:
-                    return None
+        if cached and self.analog_sensor_cache[5] != None:
+            return self.analog_sensor_cache[5] * 15. / 1024.
         else:
             try:
-                value = self.sensor(5) * 15. / 1024.
+                return self.sensor(5) * 15. / 1024.
             except:
-                return None
-        return value
+                pass
         
     def set_wheel_diameter(self, diameter):
         self.wheel_diameter = diameter
@@ -828,7 +732,7 @@ class Serializer():
     def get_Ping(self, pin, cached=False):
         ''' Get the distance reading from a Ping sonarl sensor on the given GPIO pin.
         '''
-        if cached:
+        if cached and self.digital_sensor_cache[pin] != None:
             value = self.digital_sensor_cache[pin]
         else:
             value = self.pping(pin)
@@ -837,7 +741,7 @@ class Serializer():
     def get_GP2D12(self, pin, cached=False):
         ''' Get the distance reading from a GP2D12 IR sensor on the given analog pin.
         '''
-        if cached:
+        if cached and self.analog_sensor_cache[pin] != None:
             value = self.analog_sensor_cache[pin]
         else:
             value = self.sensor(pin)
@@ -859,63 +763,54 @@ class Serializer():
             the reading in either Farhenheit or Celcius depending on the units argument.
         '''
         self.temp_units = units
-        if cached:
+        if cached and self.analog_sensor_cache[pin] != None:
             value = self.analog_sensor_cache[pin]
         else:
             value = self.sensor(pin)
-        try:
-            tempC = (value - 200.) / 4.
-            if self.temp_units == "C":
-                return tempC
-            else:
-                return 9. * tempC / 5. + 32.
-        except:
-            return self.BAD_VALUE
+        tempC = (value - 200.) / 4.
+        if self.temp_units == "C":
+            return tempC
+        else:
+            return 9. * tempC / 5. + 32.
         
     def get_PhidgetsVoltage(self, pin, cached=False):
         ''' Get the voltage from a Phidgets Voltage sensor on an analog sensor port.
         '''
-        if cached:
+        
+        if cached and self.analog_sensor_cache[pin] != None:
             value = self.analog_sensor_cache[pin]
         else:
             value = self.sensor(pin)
-        try:
-            return 0.06 * (value - 500.)
-        except:
-            return self.BAD_VALUE
+        return 0.06 * (value - 500.)
     
     def get_PhidgetsCurrent(self, pin, cached=False, model=20, ac_dc="dc"):
-        if cached:
+        if cached and self.analog_sensor_cache[pin] != None:
             value = self.analog_sensor_cache[pin]
         else:
             value = self.sensor(pin)
-        try:
-            if model == 20:
-                if ac_dc == "dc":
-                    return 0.05 * (value - 500.)
-                else:
-                    return 0.025 * value
+        if model == 20:
+            if ac_dc == "dc":
+                return 0.05 * (value - 500.)
             else:
-                if ac_dc == "dc":
-                    return 0.125 * (value - 500.)
-                else:
-                    return 0.625 * value
-        except:
-            return self.BAD_VALUE
+                return 0.025 * value
+        else:
+            if ac_dc == "dc":
+                return 0.125 * (value - 500.)
+            else:
+                return 0.625 * value        
          
     def travel_distance(self, dist, vel):
         ''' Move forward or backward 'dist' (inches or meters depending on units) at speed 'vel'.  Use negative distances
             to move backward.
         '''
+
         revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
             
-        ticks_per_loop = revs_per_second * self.encoder_resolution / self.loop_interval
-        vel = (int(ticks_per_loop / self.VPID_P))
+        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval
+        vel = (int(ticks_per_loop))
             
         revs = dist / (self.wheel_diameter * math.pi)
         ticks = revs * self.encoder_resolution * self.gear_reduction
-        if self.MOTORS_REVERSED:
-            ticks = -ticks
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
     def mogo(self, id, vel):
@@ -951,10 +846,8 @@ class Serializer():
                 revs_per_second = float(v) / (self.wheel_diameter * math.pi * 2.54 / 100)
             ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
             spd.append(int(ticks_per_loop))
-        
-        cmd = 'mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd)))  
-                    
-        return self.execute_ack(cmd)
+                                                    
+        return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd))))
         
     def travel_at_speed(self, id, vel):
         ''' Move forward or backward at speed 'vel' in meters per second.  Use negative speeds
@@ -992,7 +885,7 @@ class Serializer():
             vel = vel / 180. * math.pi
             
         # Check that the user does not mistaken degrees for radians.
-        if vel > 2.0:
+        if vel > 1.0:
             print "That is a rather high rotation rate. Are you sure you specified rotation velocity in the correct units?"
             print "Degrees per second for English units and radians per second for metric."
             print "Keep in mind that 1 radian per second is about 60 degrees per second."
@@ -1115,18 +1008,17 @@ class GP2D12():
 """ Basic test for connectivity """
 if __name__ == "__main__":
     import time
-    from datetime import datetime
     if os.name == "posix":
         portName = "/dev/ttyUSB0"
         #portName = "/dev/rfcomm0" # For bluetooth on Linux
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
-        portName = "COM12" # Windows style COM port.
+        portName = "COM21" # Windows style COM port.
         
     baudRate = 19200
   
-    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=0.05)
+    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=5)
     mySerializer.connect()
     
     print "Firmware Version", mySerializer.fw()
@@ -1134,7 +1026,6 @@ if __name__ == "__main__":
     print "Baudrate", mySerializer.get_baud()
     print "VPID", mySerializer.get_vpid()
     print "DPID", mySerializer.get_dpid()
-    print "Encoder ticks per meter", mySerializer.ticks_per_meter
     print "Voltage", mySerializer.voltage()
     
     print "Connection test successful, now shutting down...",

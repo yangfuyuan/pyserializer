@@ -33,7 +33,7 @@ else:
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
-mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=5)
+mySerializer = Serializer.Serializer(port=portName, baudrate=baudRate, timeout=0.5)
 mySerializer.connect()
 
 """ The following two lines assume we have a Ping sonar sensor attached to
@@ -93,6 +93,8 @@ time.sleep(5)
 
 thread1.stop()
 thread2.stop()
+
+print "\nTesting completed, shutting down."
 
 mySerializer.stop()
 mySerializer.close()
