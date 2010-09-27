@@ -49,7 +49,7 @@ class Serializer():
     N_DIGITAL_PORTS = 12
     UNITS = 0                   # 1 is inches, 0 is metric (cm for sensors, meters for wheels measurements) and 2 is "raw"
     WHEEL_DIAMETER = 0.132      # meters (5.0 inches) meters or inches depending on UNITS
-    WHEEL_TRACK = 0.325         # meters (12.8 inches) meters or inches units depending on UNITS
+    WHEEL_TRACK = 0.3365        # meters (12.8 inches) meters or inches units depending on UNITS
     ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
     GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
     
@@ -74,7 +74,7 @@ class Serializer():
     
     BAD_VALUE = -999
     
-    def __init__(self, port="/dev/ttyUSB0", baudrate=57600, timeout=0.5): 
+    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=0.5): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -199,8 +199,6 @@ class Serializer():
                     self.port.write(cmd + '\r')
                     value = self.recv()
             except:
-#                print "execute exception when executing", cmd
-#                print sys.exc_info()
                 return None
         return value
 
@@ -212,7 +210,7 @@ class Serializer():
                 self.port.flushInput()
                 self.port.flushOutput()
             except:
-                print "Can't flush array!"
+                pass
             try:
                 self.port.write(cmd + '\r')
                 values = self.recv_array()
@@ -222,10 +220,7 @@ class Serializer():
                     self.port.write(cmd + '\r')
                     values = self.recv_array()
             except:
-                return []
-#                print "execute_array exception when executing", cmd
-#                print sys.exc_info()
-#                return None
+                raise SerialException
         try:
             return map(int, values)
         except:
@@ -387,10 +382,9 @@ class Serializer():
         if type(id) == int: id=[id]
         values = self.execute_array('getenc %s' %' '.join(map(str, id)))
 
-        #print "ENCODER IDS", id, "VALUES", values
         if len(values) != len(id):
             print "Encoder count did not match ID count for ids", id
-            print "Values", values
+            raise SerialException
         else:
             if self.MOTORS_REVERSED:
                 for i in range(len(id)):
@@ -484,8 +478,31 @@ class Serializer():
         '''
         if type(id) == int: id = [id]
         if type(dist) == int: id = [dist]
-        if type(vel) == int: vel = [vel]          
+        if type(vel) == int: vel = [vel]
+        
+        if self.MOTORS_REVERSED:
+            for i in range(len(dist)):
+                dist[i] = -1 * dist[i] 
+                
         return self.execute('digo %s' %' '.join(map(lambda x: '%d:%d:%d' %x, zip(id, dist, vel))))
+    
+    def digo_m_per_s(self, id, dist, vel):
+        ''' Identical to digo but specifies velocities in meters per second.
+        '''
+        if type(id) == int: id = [id]
+        if type(dist) == int: id = [dist]
+        if type(vel) == int: vel = [vel]
+        
+        spd = list()
+        for v in vel:
+            if self.units == 0:
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi)
+            elif self.units == 1:
+                revs_per_second = float(v) / (self.wheel_diameter * math.pi * 2.54 / 100)
+            ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
+            spd.append(int(ticks_per_loop))
+                 
+        return self.execute('digo %s' %' '.join(map(lambda x: '%d:%d:%d' %x, zip(id, dist, spd))))
     
     def get_dpid(self):
         ''' Get the PIDA parameter values.
@@ -914,8 +931,6 @@ class Serializer():
             
         revs = dist / (self.wheel_diameter * math.pi)
         ticks = revs * self.encoder_resolution * self.gear_reduction
-        if self.MOTORS_REVERSED:
-            ticks = -ticks
         self.digo([1, 2], [ticks, ticks], [vel, vel])
         
     def mogo(self, id, vel):
@@ -935,7 +950,12 @@ class Serializer():
             in the appropriate configuration.
         '''
         if type(id) == int: id = [id]
-        if type(vel) == int: vel = [vel]          
+        if type(vel) == int: vel = [vel]
+        
+        if self.MOTORS_REVERSED:
+            for i in range(len(vel)):
+                vel[i] = -1 * vel[i]
+                      
         return self.execute_ack('mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, vel))))
     
     def mogo_m_per_s(self, id, vel):
@@ -952,6 +972,10 @@ class Serializer():
             ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
             spd.append(int(ticks_per_loop))
         
+        if self.MOTORS_REVERSED:
+            for i in range(len(spd)):
+                spd[i] = -1 * spd[i]
+
         cmd = 'mogo %s' %' '.join(map(lambda x: '%d:%d' %x, zip(id, spd)))  
                     
         return self.execute_ack(cmd)
@@ -964,35 +988,38 @@ class Serializer():
         self.mogo_m_per_s(id, vel)
         
     def rotate(self, angle, vel):
-        ''' Rotate the robot through 'angle' degrees or radians at speed 'vel'.  Use negative angles to rotate
-            in the other direction.
-        '''
-        revs_per_second = float(vel) / (self.wheel_diameter * math.pi)
-        
+        ''' Rotate the robot through 'angle' degrees or radians at speed 'vel'.  Use the ROS convention for right handed
+            coordinate systems with the z-axis pointing up so that a positive angle is counterclockwise.
+            Use negative angles to rotate clockwise.
+        '''        
         if self.units == 0:
+            revs_per_second = float(vel) / (2.0 * math.pi)
             rotation_fraction = angle / (2.0 * math.pi)
+            full_rotation_dist = self.wheel_track * math.pi
         elif self.units == 1:
+            revs_per_second = float(vel) / 360.
             rotation_fraction = angle / 360.
-            
-        ticks_per_loop = revs_per_second * self.encoder_resolution * self.loop_interval * self.gear_reduction
-        vel = (int(ticks_per_loop))
-        
-        full_rotation_dist = self.wheel_track * math.pi
+            full_rotation_dist = self.wheel_track * 2.54 / 100 * math.pi
+
+        vel = revs_per_second * full_rotation_dist # in m/s
+
         rotation_dist = rotation_fraction * full_rotation_dist
         revs = rotation_dist / (self.wheel_diameter * math.pi)
+
         ticks = revs * self.encoder_resolution  * self.gear_reduction
-        self.digo([1, 2], [ticks, -ticks], [vel, vel])
+        self.digo_m_per_s([1, 2], [ticks, -ticks], [vel, vel])
         
     def rotate_at_speed(self, vel):
-        ''' Rotate the robot continously at speed 'vel' radians or degrees per second.  Use negative speed to rotate
-            in the other direction.
+        ''' Rotate the robot continously at speed 'vel' radians or degrees per second.  Use the ROS convention for right handed
+            coordinate systems with the z-axis pointing up so that a positive speed is counterclockwise.
+            Use negative speeds to rotate clockwise.
         '''
             
         if self.units == 1:
             vel = vel / 180. * math.pi
             
         # Check that the user does not mistaken degrees for radians.
-        if vel > 2.0:
+        if vel > 5.0:
             print "That is a rather high rotation rate. Are you sure you specified rotation velocity in the correct units?"
             print "Degrees per second for English units and radians per second for metric."
             print "Keep in mind that 1 radian per second is about 60 degrees per second."
@@ -1000,13 +1027,15 @@ class Serializer():
             
         if self.units == 1:
             full_rotation_dist = self.wheel_track * 2.54 / 100 * math.pi
+            revs_per_second = float(vel) / 360.
+
         else:
             full_rotation_dist = self.wheel_track * math.pi
-            
-        revs_per_second = float(vel) / (2.0 * math.pi)
+            revs_per_second = float(vel) / (2.0 * math.pi) 
+               
         vel = revs_per_second * full_rotation_dist
-        
-        self.mogo_m_per_s([1, 2], [vel, -vel])
+
+        self.mogo_m_per_s([1, 2], [-vel, vel])
         
     def twist(self, twist):
         angle = math.atan2(twist.linear.y, twist.linear.x)
@@ -1114,8 +1143,6 @@ class GP2D12():
 
 """ Basic test for connectivity """
 if __name__ == "__main__":
-    import time
-    from datetime import datetime
     if os.name == "posix":
         portName = "/dev/ttyUSB0"
         #portName = "/dev/rfcomm0" # For bluetooth on Linux
@@ -1126,7 +1153,7 @@ if __name__ == "__main__":
         
     baudRate = 19200
   
-    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=0.05)
+    mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=0.5)
     mySerializer.connect()
     
     print "Firmware Version", mySerializer.fw()
@@ -1136,6 +1163,7 @@ if __name__ == "__main__":
     print "DPID", mySerializer.get_dpid()
     print "Encoder ticks per meter", mySerializer.ticks_per_meter
     print "Voltage", mySerializer.voltage()
+    
     
     print "Connection test successful, now shutting down...",
     
