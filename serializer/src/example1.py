@@ -51,13 +51,14 @@ myIR = Serializer.GP2D12(mySerializer, 4)
 print "Moving servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 50)
 
 for i in range(10):
-    print "All Analog Sensor Values:", mySerializer.get_all_analog()
-    print "Analog values from the cache:", mySerializer.analog_sensor_cache
-    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
-    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
-    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
-    print "Sharp IR reading using the Sharp class on analog pin 4:", myIR.value()
-    print "Sharp IR reading from cache:", myIR.value(cached=True)
+#    print "All Analog Sensor Values:", mySerializer.get_all_analog()
+#    print "Analog values from the cache:", mySerializer.analog_sensor_cache
+#    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
+#    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
+#    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
+#    print "Sharp IR reading using the Sharp class on analog pin 4:", myIR.value()
+#    print "Sharp IR reading from cache:", myIR.value(cached=True)
+    print "MaxEZ1 on pins 6 and 7", mySerializer.get_maxez1(6, 7)
     time.sleep(0.05)
     
 print "\nTesting completed, shutting down."

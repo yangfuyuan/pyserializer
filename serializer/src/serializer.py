@@ -51,7 +51,7 @@ class Serializer():
     WHEEL_DIAMETER = 0.132      # meters (5.0 inches) meters or inches depending on UNITS
     WHEEL_TRACK = 0.3365        # meters (12.8 inches) meters or inches units depending on UNITS
     ENCODER_RESOLUTION = 624    # encoder ticks per revolution of the wheel without external gears
-    GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.
+    GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.  In this case there is a 60/36 tooth gear ratio.
     
     ENCODER_TYPE = 1            # 1 = quadrature, 0 = single
     MOTORS_REVERSED = False      # Multiplies encoder counts by -1 if the motor rotation direction is reversed.
