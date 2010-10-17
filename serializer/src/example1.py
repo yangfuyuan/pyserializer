@@ -30,7 +30,7 @@ if os.name == "posix":
     # Note: On Linux, after connecting to the Bluetooth adapter, run the command
     # sudo rfcomm bind /dev/rfcomm0
 else:
-    portName = "COM43" # Change this to your main Serializer port!
+    portName = "COM12" # Change this to your main Serializer port!
     
 baudRate = 19200 # Change this to your Serializer baud rate!
 
@@ -48,17 +48,17 @@ print "Baudrate", mySerializer.get_baud()
 myPing = Serializer.Ping(mySerializer, 4)
 myIR = Serializer.GP2D12(mySerializer, 4)
 
-print "Moving servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 50)
+print "Moving servo on GPIO pin 5 (servo ID 6)", mySerializer.servo(6, 0)
 
 for i in range(10):
-#    print "All Analog Sensor Values:", mySerializer.get_all_analog()
-#    print "Analog values from the cache:", mySerializer.analog_sensor_cache
-#    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
-#    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
-#    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
-#    print "Sharp IR reading using the Sharp class on analog pin 4:", myIR.value()
-#    print "Sharp IR reading from cache:", myIR.value(cached=True)
-    print "MaxEZ1 on pins 6 and 7", mySerializer.get_maxez1(6, 7)
+    print "All Analog Sensor Values:", mySerializer.get_all_analog()
+    print "Analog values from the cache:", mySerializer.analog_sensor_cache
+    print "Serializer voltage from the cache", mySerializer.voltage(cached=True)
+    print "Ping Sonar reading on digital pin 4:", mySerializer.pping(4)
+    print "Ping reading using the Ping class and reading from the cache:", myPing.value(cached=True)
+    print "Sharp IR reading using the Sharp class on analog pin 4:", myIR.value()
+    print "Sharp IR reading from cache:", myIR.value(cached=True)
+    #print "MaxEZ1 on pins 6 and 7", mySerializer.get_maxez1(6, 7)
     time.sleep(0.05)
     
 print "\nTesting completed, shutting down."

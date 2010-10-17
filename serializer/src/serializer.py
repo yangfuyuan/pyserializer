@@ -74,7 +74,7 @@ class Serializer():
     
     BAD_VALUE = -999
     
-    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=0.01): 
+    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=0.5): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -187,13 +187,12 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
                 pass
             try:
                 self.port.write(cmd + '\r')
                 value = self.recv()
-                while value == '' or value == 'NACK':
+                while value == '' or value == 'NACK' or value == None:
                     self.port.flushInput()
                     self.port.flushOutput()
                     self.port.write(cmd + '\r')
@@ -206,19 +205,18 @@ class Serializer():
         ''' Thread safe execution of "cmd" on the SerializerTM returning an array.
         '''
         with self.messageLock:
-#            try:
-#                self.port.flushInput()
-#                self.port.flushOutput()
-#            except:
-#                pass
+            try:
+                self.port.flushInput()
+            except:
+                pass
             try:
                 self.port.write(cmd + '\r')
                 values = self.recv_array()
-#                while values == '' or values == 'NACK' or values == []:
-##                    self.port.flushInput()
-##                    self.port.flushOutput()
-#                    self.port.write(cmd + '\r')
-#                    values = self.recv_array()
+                while values == '' or values == ['NACK'] or values == [] or values == None:
+                    time.sleep(0.05)
+                    self.port.flushInput()
+                    self.port.write(cmd + '\r')
+                    values = self.recv_array()
             except:
                 raise SerialException
             try:
@@ -230,19 +228,17 @@ class Serializer():
         ''' Thread safe execution of "cmd" on the SerializerTM returning True if response is ACK.
         '''
         with self.messageLock:
-#            try:
-#                self.port.flushInput()
-#                self.port.flushOutput()
-#            except:
-#                pass
+            try:
+                self.port.flushInput()
+            except:
+                pass
             try:
                 self.port.write(cmd + '\r')
                 ack = self.recv()
-#                while ack == '' or ack == 'NACK':
-#                    self.port.flushInput()
-#                    self.port.flushOutput()
-#                    self.port.write(cmd + '\r')
-#                    ack = self.recv()
+                while ack == '' or ack == 'NACK' or ack == None:
+                    self.port.flushInput()
+                    self.port.write(cmd + '\r')
+                    ack = self.recv()
             except:
                 print "execute_ack exception when executing", cmd
                 print sys.exc_info()
@@ -255,15 +251,13 @@ class Serializer():
         with self.messageLock:
             try:
                 self.port.flushInput()
-                self.port.flushOutput()
             except:
                 pass
             try:
                 self.port.write(cmd + '\r')
                 value = self.recv()
-                while value == '' or value == 'NACK':
+                while value == '' or value == 'NACK' or value == None:
                     self.port.flushInput()
-                    self.port.flushOutput()
                     self.port.write(cmd + '\r')
                     value = self.recv()
             except:
@@ -1161,21 +1155,25 @@ if __name__ == "__main__":
         # Note: On Linux, after connecting to the Bluetooth adapter, run the command
         # sudo rfcomm bind /dev/rfcomm0
     else:
-        portName = "COM12" # Windows style COM port.
+        portName = "COM43" # Windows style COM port.
         
-    baudRate = 19200
+    baudRate = 57600
   
     mySerializer = Serializer(port=portName, baudrate=baudRate, timeout=0.5)
     mySerializer.connect()
     
     print "Firmware Version", mySerializer.fw()
-    print "Units", mySerializer.get_units()
-    print "Baudrate", mySerializer.get_baud()
-    print "VPID", mySerializer.get_vpid()
-    print "DPID", mySerializer.get_dpid()
-    print "Encoder ticks per meter", mySerializer.ticks_per_meter
-    print "Voltage", mySerializer.voltage()
-    
+#    print "Units", mySerializer.get_units()
+#    print "Baudrate", mySerializer.get_baud()
+#    print "VPID", mySerializer.get_vpid()
+#    print "DPID", mySerializer.get_dpid()
+#    print "Encoder ticks per meter", mySerializer.ticks_per_meter
+#    print "Voltage", mySerializer.voltage()
+    mySerializer.stop()
+    mySerializer.rotate(math.pi * 2, 0.4)
+    while True:
+        print mySerializer.sensor(3)
+        time.sleep(0.05)
     
     print "Connection test successful, now shutting down...",
     
