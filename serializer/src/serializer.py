@@ -54,7 +54,7 @@ class Serializer():
     GEAR_REDUCTION = 1.667      # This is for external gearing if you have any.  In this case there is a 60/36 tooth gear ratio.
     
     ENCODER_TYPE = 1            # 1 = quadrature, 0 = single
-    MOTORS_REVERSED = False      # Multiplies encoder counts by -1 if the motor rotation direction is reversed.
+    MOTORS_REVERSED = True      # Multiplies encoder counts by -1 if the motor rotation direction is reversed.
 
     VPID_P = 2   # Proportional
     VPID_I = 0   # Integral
@@ -70,11 +70,11 @@ class Serializer():
     MILLISECONDS_PER_PID_LOOP = 1.6 # Do not change this!  It is a fixed property of the Serializer PID controller.
     LOOP_INTERVAL = VPID_L * MILLISECONDS_PER_PID_LOOP / 1000 # in seconds
     
-    INIT_PID = False # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
+    INIT_PID = True # Set to True if you want to update UNITS, VPID and DPID parameters.  Otherwise, those stored in the Serializer's firmware are used.**
     
     BAD_VALUE = -999
     
-    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=0.5): 
+    def __init__(self, port="/dev/ttyUSB0", baudrate=19200, timeout=0.01): 
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -199,55 +199,55 @@ class Serializer():
                     self.port.write(cmd + '\r')
                     value = self.recv()
             except:
-                return None
-        return value
+                value = None
+            return value
 
     def execute_array(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an array.
         '''
         with self.messageLock:
-            try:
-                self.port.flushInput()
-                self.port.flushOutput()
-            except:
-                pass
+#            try:
+#                self.port.flushInput()
+#                self.port.flushOutput()
+#            except:
+#                pass
             try:
                 self.port.write(cmd + '\r')
                 values = self.recv_array()
-                while values == '' or values == 'NACK' or values == []:
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    values = self.recv_array()
+#                while values == '' or values == 'NACK' or values == []:
+##                    self.port.flushInput()
+##                    self.port.flushOutput()
+#                    self.port.write(cmd + '\r')
+#                    values = self.recv_array()
             except:
                 raise SerialException
-        try:
-            return map(int, values)
-        except:
-            return []
+            try:
+                return map(int, values)
+            except:
+                return []
         
     def execute_ack(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning True if response is ACK.
         '''
         with self.messageLock:
-            try:
-                self.port.flushInput()
-                self.port.flushOutput()
-            except:
-                pass
+#            try:
+#                self.port.flushInput()
+#                self.port.flushOutput()
+#            except:
+#                pass
             try:
                 self.port.write(cmd + '\r')
                 ack = self.recv()
-                while ack == '' or ack == 'NACK':
-                    self.port.flushInput()
-                    self.port.flushOutput()
-                    self.port.write(cmd + '\r')
-                    ack = self.recv()
+#                while ack == '' or ack == 'NACK':
+#                    self.port.flushInput()
+#                    self.port.flushOutput()
+#                    self.port.write(cmd + '\r')
+#                    ack = self.recv()
             except:
                 print "execute_ack exception when executing", cmd
                 print sys.exc_info()
                 return 0
-        return ack == 'ACK'
+            return ack == 'ACK'
         
     def execute_int(self, cmd):
         ''' Thread safe execution of "cmd" on the SerializerTM returning an int.
@@ -270,7 +270,7 @@ class Serializer():
                 print "execute_int exception when executing", cmd
                 print sys.exc_info()
                 return None
-        return int(value)
+            return int(value)
                 
     def update_digital_cache(self, id, value):
         with self.messageLock:
@@ -281,6 +281,13 @@ class Serializer():
         with self.messageLock:
             if value != "NACK":
                 self.analog_sensor_cache[id] = value
+                
+    def get_analog_cache(self, ids):
+        with self.messageLock:
+            values = list()
+            for id in ids:
+                values.append(self.analog_sensor_cache[id])
+            return values
 
     def fw(self):
         ''' The fw command returns the current firmware version.
@@ -603,7 +610,11 @@ class Serializer():
         n = len(values)
         if n != len(id):
             print "Array size incorrect: returning cached values for sensors", id
-            return self.analog_sensor_cache
+            values = self.get_analog_cache(id)
+            if len(values) == 1:
+                return values[0]
+            else:
+                return values
         try:
             for i in range(n):
                 if values[i] == None:
@@ -617,6 +628,7 @@ class Serializer():
         except:
             print "Exception reading analog sensors: returning cached values for sensors", id
             return self.analog_sensor_cache
+        
         
     def get_analog(self, id):
         return self.sensor(id)
